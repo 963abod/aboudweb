@@ -1,7 +1,10 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 
-export function Pricing({ lang }) {
+export function Pricing({ lang, settings }) {
+  const starterPrice = settings?.starter_tier_price?.value_ar || '300';
+  const displayStarterPrice = starterPrice.startsWith('$') ? starterPrice : `$${starterPrice}`;
+
   const content = {
     ar: {
       title: 'باقات الأسعار',
@@ -10,7 +13,7 @@ export function Pricing({ lang }) {
         {
           id: 'starter',
           name: 'باقة الانطلاق',
-          price: '$300',
+          price: displayStarterPrice,
           desc: 'مثالية للشركات الناشئة والمشاريع الصغيرة.',
           features: [
             'موقع متجاوب بالكامل 1-3 صفحات',
@@ -46,7 +49,7 @@ export function Pricing({ lang }) {
         {
           id: 'starter',
           name: 'Starter Package',
-          price: '$300',
+          price: displayStarterPrice,
           desc: 'Perfect for startups and small businesses.',
           features: [
             'Fully responsive 1-3 page website',

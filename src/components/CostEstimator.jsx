@@ -3,7 +3,7 @@ import { Send, MessageCircle } from 'lucide-react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export function CostEstimator({ lang }) {
+export function CostEstimator({ lang, settings }) {
   const content = {
     ar: {
       title: 'حاسبة التكلفة',
@@ -45,15 +45,20 @@ export function CostEstimator({ lang }) {
 
   const text = content[lang];
 
+  // Base price dynamically from settings or fallback to 300
+  const basePriceSetting = settings?.calculator_base_price?.value_ar ? Number(settings.calculator_base_price.value_ar) : 300;
+  const whatsappNumber = settings?.contact_whatsapp?.value_ar || '963951708141';
+  const telegramUsername = settings?.contact_telegram?.value_ar || 'aboudweb';
+
   const [selectedType, setSelectedType] = useState('landing');
   const [selectedFeatures, setSelectedFeatures] = useState([]);
-  const [price, setPrice] = useState(300);
+  const [price, setPrice] = useState(basePriceSetting || 300);
 
   const prices = {
     types: {
-      'landing': 300,
-      'business': 500,
-      'ecommerce': 1000
+      'landing': basePriceSetting || 300,
+      'business': (basePriceSetting || 300) + 200,
+      'ecommerce': (basePriceSetting || 300) + 700
     },
     features: {
       'multilang': 150,
@@ -69,7 +74,7 @@ export function CostEstimator({ lang }) {
       newPrice += prices.features[feature];
     });
     setPrice(newPrice);
-  }, [selectedType, selectedFeatures]);
+  }, [selectedType, selectedFeatures, basePriceSetting]);
 
   const toggleFeature = (feature) => {
     setSelectedFeatures(prev =>
@@ -148,7 +153,7 @@ export function CostEstimator({ lang }) {
 
             <div className="flex flex-col w-full md:w-auto gap-3">
               <a
-                href={`https://wa.me/963951708141?text=${buildMessage()}`}
+                href={`https://wa.me/${whatsappNumber}?text=${buildMessage()}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium transition-colors"
@@ -158,7 +163,7 @@ export function CostEstimator({ lang }) {
               </a>
 
               <a
-                href={`https://t.me/aboudweb?text=${buildMessage()}`}
+                href={`https://t.me/${telegramUsername.replace('@', '')}?text=${buildMessage()}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-medium transition-colors"

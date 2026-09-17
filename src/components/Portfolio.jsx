@@ -79,9 +79,11 @@ export function Portfolio({ lang, customProjects }) {
   const casesToDisplay = (customProjects && customProjects.length > 0)
     ? customProjects.map(p => ({
         id: p.id,
-        title: p.title,
+        title: lang === 'ar' ? (p.title_ar || p.title) : (p.title_en || p.title),
         desc: lang === 'ar' ? (p.desc_ar || p.desc_en) : (p.desc_en || p.desc_ar),
         category: p.category || 'ecommerce',
+        liveUrl: p.live_url || p.url || '',
+        imageUrl: p.image_url || p.cover_image || '',
         color: p.color || 'from-amber-500/20 to-zinc-900/50'
       }))
     : text.cases;
@@ -123,8 +125,19 @@ export function Portfolio({ lang, customProjects }) {
               key={item.id}
               className="group relative overflow-hidden rounded-3xl bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all duration-300 min-h-[320px] flex flex-col justify-end p-8"
             >
-              {/* Abstract Graphic Background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-40 group-hover:opacity-60 transition-opacity duration-300`}></div>
+              {/* Cover Image or Abstract Gradient */}
+              {item.imageUrl ? (
+                <div className="absolute inset-0 z-0">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-transparent"></div>
+                </div>
+              ) : (
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-40 group-hover:opacity-60 transition-opacity duration-300`}></div>
+              )}
 
               <div className="relative z-10">
                 <span className="inline-block px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs font-medium mb-4 backdrop-blur-sm">
@@ -133,9 +146,20 @@ export function Portfolio({ lang, customProjects }) {
                 <h3 className="text-2xl font-bold mb-2 text-zinc-900 dark:text-zinc-50">
                   {item.title}
                 </h3>
-                <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed mb-3">
                   {item.desc}
                 </p>
+
+                {item.liveUrl && (
+                  <a
+                    href={item.liveUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-medium mt-1"
+                  >
+                    {lang === 'ar' ? 'معاينة الموقع ↗' : 'Visit Live Site ↗'}
+                  </a>
+                )}
               </div>
             </div>
           ))}

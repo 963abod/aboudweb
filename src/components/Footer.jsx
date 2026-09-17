@@ -1,7 +1,14 @@
 import React from 'react';
 import { Logo } from './Logo';
 
-export function Footer() {
+export function Footer({ settings }) {
+  const whatsappNumber = settings?.contact_whatsapp?.value_ar || '963951708141';
+  const telegramUsername = settings?.contact_telegram?.value_ar || 'aboudweb';
+  const instagramUrl = settings?.contact_instagram?.value_ar || 'https://instagram.com/aboudweb';
+
+  const cleanTelegram = telegramUsername.replace('@', '');
+  const finalInstagramUrl = instagramUrl.startsWith('http') ? instagramUrl : `https://${instagramUrl}`;
+
   return (
     <footer className="border-t border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#09090b] py-12 px-4">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
@@ -22,10 +29,9 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-4 text-zinc-400">
-            <a href="https://wa.me/963951708141" target="_blank" rel="noreferrer" className="hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">WhatsApp</a>
-            <a href="https://t.me/aboudweb" target="_blank" rel="noreferrer" className="hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">Telegram</a>
-            <a href="#" className="hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">X</a>
-            <a href="#" className="hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">Instagram</a>
+            <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noreferrer" className="hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">WhatsApp</a>
+            <a href={`https://t.me/${cleanTelegram}`} target="_blank" rel="noreferrer" className="hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">Telegram</a>
+            <a href={finalInstagramUrl} target="_blank" rel="noreferrer" className="hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors">Instagram</a>
           </div>
         </div>
       </div>

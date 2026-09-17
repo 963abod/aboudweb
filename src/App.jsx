@@ -10,7 +10,7 @@ import { supabase } from './supabase';
 function App() {
   const [lang, setLang] = useState('ar');
   const [theme, setTheme] = useState('dark');
-  const [availabilityText, setAvailabilityText] = useState(null);
+  const [siteSettings, setSiteSettings] = useState(null);
   const [customProjects, setCustomProjects] = useState(null);
 
   useEffect(() => {
@@ -32,21 +32,20 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Fetch dynamic data from Supabase with fallback defaults
+    // Fetch dynamic data from Supabase
     async function loadData() {
       try {
-        // Fetch availability setting
+        // Fetch all settings
         const { data: settingsData, error: settingsErr } = await supabase
           .from('settings')
-          .select('*')
-          .eq('key', 'availability')
-          .maybeSingle();
+          .select('*');
 
-        if (settingsData && !settingsErr) {
-          setAvailabilityText({
-            ar: settingsData.value_ar,
-            en: settingsData.value_en
+        if (settingsData && !settingsErr && Array.isArray(settingsData)) {
+          const settingsMap = {};
+          settingsData.forEach(item => {
+            settingsMap[item.key] = item;
           });
+          setSiteSettings(settingsMap);
         }
 
         // Fetch projects
@@ -97,12 +96,12 @@ function App() {
     <div className="min-h-screen bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-50 transition-colors duration-300">
       <Navbar lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} />
       <main>
-        <Hero lang={lang} availabilityText={availabilityText} />
-        <CostEstimator lang={lang} />
+        <Hero lang={lang} settings={siteSettings} />
+        <CostEstimator lang={lang} settings={siteSettings} />
         <Portfolio lang={lang} customProjects={customProjects} />
-        <Pricing lang={lang} />
+        <Pricing lang={lang} settings={siteSettings} />
       </main>
-      <Footer />
+      <Footer settings={siteSettings} />
     </div>
   );
 }
