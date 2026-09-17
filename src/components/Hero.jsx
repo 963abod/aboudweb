@@ -1,25 +1,34 @@
 import React from 'react';
 
-export function Hero({ lang, availabilityText }) {
+export function Hero({ lang, settings }) {
+  const availabilityStatus = settings?.availability_status?.value_ar !== 'closed';
+  const availabilityAr = settings?.availability?.value_ar || 'متاح لمشاريع جديدة هذا الشهر';
+  const availabilityEn = settings?.availability?.value_en || 'Available for new projects this month';
+
+  const titleAr = settings?.hero_title?.value_ar || 'نصنع مواقع رقمية فائقة الدقة والسرعة';
+  const titleEn = settings?.hero_title?.value_en || 'Engineering high-performance digital experiences';
+
+  const subtitleAr = settings?.hero_subtitle?.value_ar || 'تصميم عصري وحلول ويب متطورة تمنح علامتك التجارية الثقة والنمو الذي تستحقه.';
+  const subtitleEn = settings?.hero_subtitle?.value_en || 'Modern web architecture and bespoke digital design crafted to turn visitors into clients.';
+
   const content = {
     ar: {
-      badge: availabilityText?.ar || 'متاح لمشاريع جديدة هذا الشهر',
-      title: 'نصنع مواقع رقمية فائقة الدقة والسرعة',
-      subtitle: 'تصميم عصري وحلول ويب متطورة تمنح علامتك التجارية الثقة والنمو الذي تستحقه.',
+      badge: availabilityAr,
+      title: titleAr,
+      subtitle: subtitleAr,
       ctaPrimary: 'احسب تكلفة مشروعك',
       ctaSecondary: 'استكشف معرض الأعمال'
     },
     en: {
-      badge: availabilityText?.en || 'Available for new projects this month',
-      title: 'Engineering high-performance digital experiences',
-      subtitle: 'Modern web architecture and bespoke digital design crafted to turn visitors into clients.',
+      badge: availabilityEn,
+      title: titleEn,
+      subtitle: subtitleEn,
       ctaPrimary: 'Calculate Project Cost',
       ctaSecondary: 'Explore Portfolio'
     }
   };
 
   const text = content[lang];
-  const badgeDisplay = (lang === 'ar' ? availabilityText?.ar : availabilityText?.en) || text.badge;
 
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
@@ -29,11 +38,17 @@ export function Hero({ lang, availabilityText }) {
       {/* Live Badge */}
       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/80 backdrop-blur-sm mb-8">
         <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          {availabilityStatus ? (
+            <>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </>
+          ) : (
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-zinc-500"></span>
+          )}
         </span>
         <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          {badgeDisplay}
+          {text.badge}
         </span>
       </div>
 
