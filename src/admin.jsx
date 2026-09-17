@@ -1,6 +1,7 @@
 import React, { useState, useEffect, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { supabase } from './supabase';
+import { DEFAULT_SETTINGS, mergeSettings } from './defaultSettings';
 import './index.css';
 
 function AdminDashboard() {
@@ -10,31 +11,21 @@ function AdminDashboard() {
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
 
-  // Active tab in dashboard: 'settings' or 'projects'
-  const [activeTab, setActiveTab] = useState('projects');
+  // Active tab in dashboard: 'hero' | 'calculator' | 'projects' | 'contacts'
+  const [activeTab, setActiveTab] = useState('hero');
 
-  // Site Settings state
-  // Hero Section
-  const [availabilityActive, setAvailabilityActive] = useState(true);
-  const [availabilityAr, setAvailabilityAr] = useState('متاح لمشاريع جديدة هذا الشهر');
-  const [availabilityEn, setAvailabilityEn] = useState('Available for new projects this month');
-  const [heroTitleAr, setHeroTitleAr] = useState('نصنع مواقع رقمية فائقة الدقة والسرعة');
-  const [heroTitleEn, setHeroTitleEn] = useState('Engineering high-performance digital experiences');
-  const [heroSubtitleAr, setHeroSubtitleAr] = useState('تصميم عصري وحلول ويب متطورة تمنح علامتك التجارية الثقة والنمو الذي تستحقه.');
-  const [heroSubtitleEn, setHeroSubtitleEn] = useState('Modern web architecture and bespoke digital design crafted to turn visitors into clients.');
-
-  // Contact & Conversion
-  const [whatsapp, setWhatsapp] = useState('963951708141');
-  const [telegram, setTelegram] = useState('aboudweb');
-  const [instagram, setInstagram] = useState('https://instagram.com/aboudweb');
-
-  // Pricing & Calculator
-  const [calculatorBasePrice, setCalculatorBasePrice] = useState('300');
-  const [starterTierPrice, setStarterTierPrice] = useState('300');
-
+  // Full Site Settings state
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [settingsMsg, setSettingsMsg] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Projects state
+  // Helper string states for multi-line feature lists in Tab 2
+  const [pkg1FeaturesAr, setPkg1FeaturesAr] = useState('');
+  const [pkg1FeaturesEn, setPkg1FeaturesEn] = useState('');
+  const [pkg2FeaturesAr, setPkg2FeaturesAr] = useState('');
+  const [pkg2FeaturesEn, setPkg2FeaturesEn] = useState('');
+
+  // Projects state (Tab 3)
   const [projects, setProjects] = useState([]);
   const [editingProject, setEditingProject] = useState(null);
   const [projectForm, setProjectForm] = useState({
@@ -71,6 +62,18 @@ function AdminDashboard() {
     }
   }, [session]);
 
+  // Sync multi-line text state when settings change
+  useEffect(() => {
+    if (settings?.pricing?.package1) {
+      setPkg1FeaturesAr((settings.pricing.package1.features_ar || []).join('\n'));
+      setPkg1FeaturesEn((settings.pricing.package1.features_en || []).join('\n'));
+    }
+    if (settings?.pricing?.package2) {
+      setPkg2FeaturesAr((settings.pricing.package2.features_ar || []).join('\n'));
+      setPkg2FeaturesEn((settings.pricing.package2.features_en || []).join('\n'));
+    }
+  }, [settings]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setAuthError('');
@@ -91,79 +94,59 @@ function AdminDashboard() {
     try {
       const { data, error } = await supabase
         .from('settings')
-        .select('*');
+        .select('data')
+        .eq('id', 1);
 
-      if (data && !error && Array.isArray(data)) {
-        const settingsMap = {};
-        data.forEach(item => {
-          settingsMap[item.key] = item;
-        });
-
-        if (settingsMap.availability) {
-          if (settingsMap.availability.value_ar) setAvailabilityAr(settingsMap.availability.value_ar);
-          if (settingsMap.availability.value_en) setAvailabilityEn(settingsMap.availability.value_en);
-        }
-        if (settingsMap.availability_status) {
-          setAvailabilityActive(settingsMap.availability_status.value_ar === 'active');
-        }
-        if (settingsMap.hero_title) {
-          if (settingsMap.hero_title.value_ar) setHeroTitleAr(settingsMap.hero_title.value_ar);
-          if (settingsMap.hero_title.value_en) setHeroTitleEn(settingsMap.hero_title.value_en);
-        }
-        if (settingsMap.hero_subtitle) {
-          if (settingsMap.hero_subtitle.value_ar) setHeroSubtitleAr(settingsMap.hero_subtitle.value_ar);
-          if (settingsMap.hero_subtitle.value_en) setHeroSubtitleEn(settingsMap.hero_subtitle.value_en);
-        }
-        if (settingsMap.contact_whatsapp) {
-          if (settingsMap.contact_whatsapp.value_ar) setWhatsapp(settingsMap.contact_whatsapp.value_ar);
-        }
-        if (settingsMap.contact_telegram) {
-          if (settingsMap.contact_telegram.value_ar) setTelegram(settingsMap.contact_telegram.value_ar);
-        }
-        if (settingsMap.contact_instagram) {
-          if (settingsMap.contact_instagram.value_ar) setInstagram(settingsMap.contact_instagram.value_ar);
-        }
-        if (settingsMap.calculator_base_price) {
-          if (settingsMap.calculator_base_price.value_ar) setCalculatorBasePrice(settingsMap.calculator_base_price.value_ar);
-        }
-        if (settingsMap.starter_tier_price) {
-          if (settingsMap.starter_tier_price.value_ar) setStarterTierPrice(settingsMap.starter_tier_price.value_ar);
-        }
+      if (data && data.length > 0 && data[0].data && !error) {
+        setSettings(mergeSettings(data[0].data));
+      } else {
+        setSettings(DEFAULT_SETTINGS);
       }
     } catch (err) {
       console.log('Settings fetch notice:', err);
+      setSettings(DEFAULT_SETTINGS);
     }
   };
 
   const saveSettings = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    setIsSaving(true);
     setSettingsMsg('جاري الحفظ...');
-    try {
-      const now = new Date().toISOString();
-      const settingsPayload = [
-        { key: 'availability', value_ar: availabilityAr, value_en: availabilityEn, updated_at: now },
-        { key: 'availability_status', value_ar: availabilityActive ? 'active' : 'closed', value_en: availabilityActive ? 'active' : 'closed', updated_at: now },
-        { key: 'hero_title', value_ar: heroTitleAr, value_en: heroTitleEn, updated_at: now },
-        { key: 'hero_subtitle', value_ar: heroSubtitleAr, value_en: heroSubtitleEn, updated_at: now },
-        { key: 'contact_whatsapp', value_ar: whatsapp, value_en: whatsapp, updated_at: now },
-        { key: 'contact_telegram', value_ar: telegram, value_en: telegram, updated_at: now },
-        { key: 'contact_instagram', value_ar: instagram, value_en: instagram, updated_at: now },
-        { key: 'calculator_base_price', value_ar: calculatorBasePrice, value_en: calculatorBasePrice, updated_at: now },
-        { key: 'starter_tier_price', value_ar: starterTierPrice, value_en: starterTierPrice, updated_at: now },
-      ];
 
+    // Prepare features arrays from textareas
+    const updatedSettings = {
+      ...settings,
+      pricing: {
+        ...settings.pricing,
+        package1: {
+          ...settings.pricing.package1,
+          features_ar: pkg1FeaturesAr.split('\n').filter(f => f.trim().length > 0),
+          features_en: pkg1FeaturesEn.split('\n').filter(f => f.trim().length > 0)
+        },
+        package2: {
+          ...settings.pricing.package2,
+          features_ar: pkg2FeaturesAr.split('\n').filter(f => f.trim().length > 0),
+          features_en: pkg2FeaturesEn.split('\n').filter(f => f.trim().length > 0)
+        }
+      }
+    };
+
+    try {
       const { error } = await supabase
         .from('settings')
-        .upsert(settingsPayload, { onConflict: 'key' });
+        .upsert({ id: 1, data: updatedSettings }, { onConflict: 'id' });
 
       if (error) {
-        setSettingsMsg(`خطأ: ${error.message}`);
+        setSettingsMsg(`خطأ أثناء الحفظ: ${error.message}`);
       } else {
-        setSettingsMsg('تم حفظ جميع الإعدادات بنجاح');
+        setSettings(updatedSettings);
+        setSettingsMsg('تم حفظ الإعدادات بنجاح');
         setTimeout(() => setSettingsMsg(''), 3000);
       }
     } catch (err) {
-      setSettingsMsg(`خطأ: ${err.message}`);
+      setSettingsMsg(`خطأ أثناء الحفظ: ${err.message}`);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -277,7 +260,7 @@ function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#09090b] flex items-center justify-center text-zinc-400">
+      <div className="min-h-screen bg-[#09090b] flex items-center justify-center text-zinc-400 font-arabic">
         جاري التحميل...
       </div>
     );
@@ -286,11 +269,11 @@ function AdminDashboard() {
   // Login View
   if (!session) {
     return (
-      <div className="min-h-screen bg-[#09090b] text-zinc-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#09090b] text-zinc-100 flex items-center justify-center p-4 font-arabic">
         <div className="w-full max-w-md bg-zinc-900/80 border border-zinc-800 rounded-2xl p-8 shadow-2xl backdrop-blur-xl">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold tracking-tight text-white mb-2">تسجيل الدخول - لوحة التحكم</h1>
-            <p className="text-sm text-zinc-400">إدارة إعدادات الموقع ومعرض الأعمال</p>
+            <p className="text-sm text-zinc-400">إدارة كافة إعدادات ومحتوى الموقع</p>
           </div>
 
           {authError && (
@@ -371,10 +354,30 @@ function AdminDashboard() {
         </div>
       </header>
 
-      {/* Main Container */}
+      {/* Main Content Container */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Navigation Tabs */}
-        <div className="flex gap-2 border-b border-zinc-800 mb-8">
+        <div className="flex flex-wrap gap-2 border-b border-zinc-800 mb-8">
+          <button
+            onClick={() => setActiveTab('hero')}
+            className={`pb-3 px-4 font-medium text-sm border-b-2 transition-colors ${
+              activeTab === 'hero'
+                ? 'border-white text-white'
+                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            Tab 1: الهيرو والنصوص الرئيسية
+          </button>
+          <button
+            onClick={() => setActiveTab('calculator')}
+            className={`pb-3 px-4 font-medium text-sm border-b-2 transition-colors ${
+              activeTab === 'calculator'
+                ? 'border-white text-white'
+                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            Tab 2: حاسبة التكلفة والباقات
+          </button>
           <button
             onClick={() => setActiveTab('projects')}
             className={`pb-3 px-4 font-medium text-sm border-b-2 transition-colors ${
@@ -383,225 +386,613 @@ function AdminDashboard() {
                 : 'border-transparent text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            إدارة معرض الأعمال
+            Tab 3: معرض المشاريع
           </button>
           <button
-            onClick={() => setActiveTab('settings')}
+            onClick={() => setActiveTab('contacts')}
             className={`pb-3 px-4 font-medium text-sm border-b-2 transition-colors ${
-              activeTab === 'settings'
+              activeTab === 'contacts'
                 ? 'border-white text-white'
                 : 'border-transparent text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            إعدادات الموقع
+            Tab 4: التواصل والفوتر
           </button>
         </div>
 
-        {/* Tab Content: Settings */}
-        {activeTab === 'settings' && (
+        {/* Global Save Feedback Message */}
+        {settingsMsg && (
+          <div className="mb-6 p-4 rounded-xl bg-zinc-800 border border-zinc-700 text-sm text-zinc-200 flex items-center justify-between">
+            <span>{settingsMsg}</span>
+          </div>
+        )}
+
+        {/* Tab 1: Hero & Global Settings */}
+        {activeTab === 'hero' && (
           <form onSubmit={saveSettings} className="space-y-8">
-            {settingsMsg && (
-              <div className="p-4 rounded-xl bg-zinc-800 border border-zinc-700 text-sm text-zinc-200">
-                {settingsMsg}
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Card 1: Hero Section */}
-              <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 backdrop-blur-md space-y-5">
-                <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
-                  <h2 className="text-lg font-bold text-white">قسم البداية (Hero Section)</h2>
-                  {/* Availability Toggle Switch */}
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <span className="text-xs text-zinc-400">
-                      {availabilityActive ? 'متاح (Active)' : 'مغلق (Closed)'}
-                    </span>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={availabilityActive}
-                      onClick={() => setAvailabilityActive(!availabilityActive)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        availabilityActive ? 'bg-emerald-500' : 'bg-zinc-700'
+            <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 backdrop-blur-md space-y-6">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+                <h2 className="text-lg font-bold text-white">إعدادات قسم البداية والنصوص الرئيسية (Hero & Global)</h2>
+                {/* Availability Toggle */}
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <span className="text-xs text-zinc-400">
+                    {settings.hero.availability_active ? 'متاح (Active)' : 'مغلق (Closed)'}
+                  </span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={settings.hero.availability_active}
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, availability_active: !settings.hero.availability_active }
+                      })
+                    }
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      settings.hero.availability_active ? 'bg-emerald-500' : 'bg-zinc-700'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        settings.hero.availability_active ? '-translate-x-6' : '-translate-x-1'
                       }`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          availabilityActive ? '-translate-x-6' : '-translate-x-1'
-                        }`}
-                      />
-                    </button>
-                  </label>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                    نص التوفر (بالعربية)
-                  </label>
-                  <input
-                    type="text"
-                    value={availabilityAr}
-                    onChange={(e) => setAvailabilityAr(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                    نص التوفر (بالإنجليزية)
-                  </label>
-                  <input
-                    type="text"
-                    value={availabilityEn}
-                    onChange={(e) => setAvailabilityEn(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                    العنوان الرئيسي (بالعربية)
-                  </label>
-                  <input
-                    type="text"
-                    value={heroTitleAr}
-                    onChange={(e) => setHeroTitleAr(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                    العنوان الرئيسي (بالإنجليزية)
-                  </label>
-                  <input
-                    type="text"
-                    value={heroTitleEn}
-                    onChange={(e) => setHeroTitleEn(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                    العنوان الفرعي (بالعربية)
-                  </label>
-                  <textarea
-                    rows="3"
-                    value={heroSubtitleAr}
-                    onChange={(e) => setHeroSubtitleAr(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                    العنوان الفرعي (بالإنجليزية)
-                  </label>
-                  <textarea
-                    rows="3"
-                    value={heroSubtitleEn}
-                    onChange={(e) => setHeroSubtitleEn(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
-                  />
-                </div>
+                    />
+                  </button>
+                </label>
               </div>
 
-              {/* Column 2: Contact & Conversion + Pricing & Calculator */}
-              <div className="space-y-8">
-                {/* Card 2: Contact & Conversion */}
-                <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 backdrop-blur-md space-y-5">
-                  <h2 className="text-lg font-bold text-white border-b border-zinc-800 pb-4">
-                    التواصل والتحويل (Contact & Conversion)
-                  </h2>
-
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                      رقم الواتساب (WhatsApp Phone Number)
-                    </label>
-                    <input
-                      type="text"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      placeholder="963951708141"
-                      className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                      اسم المستخدم في تليغرام (Telegram Username)
-                    </label>
-                    <input
-                      type="text"
-                      value={telegram}
-                      onChange={(e) => setTelegram(e.target.value)}
-                      placeholder="aboudweb"
-                      className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                      رابط إنستغرام (Instagram URL)
-                    </label>
-                    <input
-                      type="text"
-                      value={instagram}
-                      onChange={(e) => setInstagram(e.target.value)}
-                      placeholder="https://instagram.com/aboudweb"
-                      className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
-                    />
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">نص التوفر (بالعربية)</label>
+                  <input
+                    type="text"
+                    value={settings.hero.availability_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, availability_ar: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm"
+                  />
                 </div>
 
-                {/* Card 3: Pricing & Calculator */}
-                <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 backdrop-blur-md space-y-5">
-                  <h2 className="text-lg font-bold text-white border-b border-zinc-800 pb-4">
-                    الأسعار والحاسبة (Pricing & Calculator)
-                  </h2>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">نص التوفر (بالإنجليزية)</label>
+                  <input
+                    type="text"
+                    value={settings.hero.availability_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, availability_en: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                      السعر الابتدائي للحاسبة - USD (Base Starting Price)
-                    </label>
-                    <input
-                      type="number"
-                      value={calculatorBasePrice}
-                      onChange={(e) => setCalculatorBasePrice(e.target.value)}
-                      placeholder="300"
-                      className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">العنوان الرئيسي H1 (بالعربية)</label>
+                  <input
+                    type="text"
+                    value={settings.hero.title_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, title_ar: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-                      سعر باقة الانطلاق (Starter Tier Price)
-                    </label>
-                    <input
-                      type="text"
-                      value={starterTierPrice}
-                      onChange={(e) => setStarterTierPrice(e.target.value)}
-                      placeholder="300"
-                      className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">العنوان الرئيسي H1 (بالإنجليزية)</label>
+                  <input
+                    type="text"
+                    value={settings.hero.title_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, title_en: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">الوصف الفرعي Subtitle (بالعربية)</label>
+                  <textarea
+                    rows="2"
+                    value={settings.hero.subtitle_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, subtitle_ar: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">الوصف الفرعي Subtitle (بالإنجليزية)</label>
+                  <textarea
+                    rows="2"
+                    value={settings.hero.subtitle_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, subtitle_en: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">زر الدعوة للعمل الرئيسي CTA Primary (بالعربية)</label>
+                  <input
+                    type="text"
+                    value={settings.hero.cta_primary_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, cta_primary_ar: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">زر الدعوة للعمل الرئيسي CTA Primary (بالإنجليزية)</label>
+                  <input
+                    type="text"
+                    value={settings.hero.cta_primary_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, cta_primary_en: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">زر الدعوة للعمل الثانوي CTA Secondary (بالعربية)</label>
+                  <input
+                    type="text"
+                    value={settings.hero.cta_secondary_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, cta_secondary_ar: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">زر الدعوة للعمل الثانوي CTA Secondary (بالإنجليزية)</label>
+                  <input
+                    type="text"
+                    value={settings.hero.cta_secondary_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        hero: { ...settings.hero, cta_secondary_en: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-8 py-3 bg-zinc-100 hover:bg-white text-zinc-900 font-semibold rounded-xl transition-all shadow-lg hover:shadow-zinc-100/10"
+                disabled={isSaving}
+                className="px-8 py-3 bg-zinc-100 hover:bg-white text-zinc-900 font-semibold rounded-xl transition-all shadow-lg hover:shadow-zinc-100/10 disabled:opacity-50"
               >
-                حفظ جميع الإعدادات
+                {isSaving ? 'جاري الحفظ...' : 'حفظ التعديلات'}
               </button>
             </div>
           </form>
         )}
 
-        {/* Tab Content: Projects */}
+        {/* Tab 2: Pricing & Calculator Engine */}
+        {activeTab === 'calculator' && (
+          <form onSubmit={saveSettings} className="space-y-8">
+            {/* Calculator Settings */}
+            <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 backdrop-blur-md space-y-6">
+              <h2 className="text-lg font-bold text-white border-b border-zinc-800 pb-4">
+                1. إعدادات حاسبة التكلفة (Cost Calculator Engine)
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    السعر الأساسي للحاسبة Base Price ($)
+                  </label>
+                  <input
+                    type="number"
+                    value={settings.calculator.base_price || 300}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        calculator: { ...settings.calculator, base_price: Number(e.target.value) }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    إضافة لغات متعددة Multi-Language Addon ($)
+                  </label>
+                  <input
+                    type="number"
+                    value={settings.calculator.addons?.multilang ?? 150}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        calculator: {
+                          ...settings.calculator,
+                          addons: { ...settings.calculator.addons, multilang: Number(e.target.value) }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    إضافة لوحة تحكم Dynamic CMS Addon ($)
+                  </label>
+                  <input
+                    type="number"
+                    value={settings.calculator.addons?.cms ?? 250}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        calculator: {
+                          ...settings.calculator,
+                          addons: { ...settings.calculator.addons, cms: Number(e.target.value) }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    إضافة ربط مخصص API Integrations Addon ($)
+                  </label>
+                  <input
+                    type="number"
+                    value={settings.calculator.addons?.integrations ?? 200}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        calculator: {
+                          ...settings.calculator,
+                          addons: { ...settings.calculator.addons, integrations: Number(e.target.value) }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    إضافة بوابات الدفع Payment Gateway Addon ($)
+                  </label>
+                  <input
+                    type="number"
+                    value={settings.calculator.addons?.payment ?? 200}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        calculator: {
+                          ...settings.calculator,
+                          addons: { ...settings.calculator.addons, payment: Number(e.target.value) }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Packages Settings */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Package 1 */}
+              <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 backdrop-blur-md space-y-5">
+                <h2 className="text-base font-bold text-white border-b border-zinc-800 pb-3">
+                  الباقة الأولى: باقة الانطلاق (Starter Package)
+                </h2>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">اسم الباقة (بالعربية)</label>
+                  <input
+                    type="text"
+                    value={settings.pricing.package1?.name_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pricing: {
+                          ...settings.pricing,
+                          package1: { ...settings.pricing.package1, name_ar: e.target.value }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">اسم الباقة (بالإنجليزية)</label>
+                  <input
+                    type="text"
+                    value={settings.pricing.package1?.name_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pricing: {
+                          ...settings.pricing,
+                          package1: { ...settings.pricing.package1, name_en: e.target.value }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">السعر ($ or text)</label>
+                  <input
+                    type="text"
+                    value={settings.pricing.package1?.price || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pricing: {
+                          ...settings.pricing,
+                          package1: { ...settings.pricing.package1, price: e.target.value }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">الوصف (بالعربية)</label>
+                  <input
+                    type="text"
+                    value={settings.pricing.package1?.desc_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pricing: {
+                          ...settings.pricing,
+                          package1: { ...settings.pricing.package1, desc_ar: e.target.value }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">الوصف (بالإنجليزية)</label>
+                  <input
+                    type="text"
+                    value={settings.pricing.package1?.desc_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pricing: {
+                          ...settings.pricing,
+                          package1: { ...settings.pricing.package1, desc_en: e.target.value }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    المميزات (بالعربية - كل ميزة في سطر)
+                  </label>
+                  <textarea
+                    rows="5"
+                    value={pkg1FeaturesAr}
+                    onChange={(e) => setPkg1FeaturesAr(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    المميزات (بالإنجليزية - كل ميزة في سطر)
+                  </label>
+                  <textarea
+                    rows="5"
+                    value={pkg1FeaturesEn}
+                    onChange={(e) => setPkg1FeaturesEn(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+              </div>
+
+              {/* Package 2 */}
+              <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 backdrop-blur-md space-y-5">
+                <h2 className="text-base font-bold text-white border-b border-zinc-800 pb-3">
+                  الباقة الثانية: باقة الحلول المخصصة (Custom Quote Package)
+                </h2>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">اسم الباقة (بالعربية)</label>
+                  <input
+                    type="text"
+                    value={settings.pricing.package2?.name_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pricing: {
+                          ...settings.pricing,
+                          package2: { ...settings.pricing.package2, name_ar: e.target.value }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">اسم الباقة (بالإنجليزية)</label>
+                  <input
+                    type="text"
+                    value={settings.pricing.package2?.name_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pricing: {
+                          ...settings.pricing,
+                          package2: { ...settings.pricing.package2, name_en: e.target.value }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">علامة السعر (بالعربية)</label>
+                    <input
+                      type="text"
+                      value={settings.pricing.package2?.price_ar || ''}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          pricing: {
+                            ...settings.pricing,
+                            package2: { ...settings.pricing.package2, price_ar: e.target.value }
+                          }
+                        })
+                      }
+                      className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">علامة السعر (بالإنجليزية)</label>
+                    <input
+                      type="text"
+                      value={settings.pricing.package2?.price_en || ''}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          pricing: {
+                            ...settings.pricing,
+                            package2: { ...settings.pricing.package2, price_en: e.target.value }
+                          }
+                        })
+                      }
+                      className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">الوصف (بالعربية)</label>
+                  <input
+                    type="text"
+                    value={settings.pricing.package2?.desc_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pricing: {
+                          ...settings.pricing,
+                          package2: { ...settings.pricing.package2, desc_ar: e.target.value }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">الوصف (بالإنجليزية)</label>
+                  <input
+                    type="text"
+                    value={settings.pricing.package2?.desc_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pricing: {
+                          ...settings.pricing,
+                          package2: { ...settings.pricing.package2, desc_en: e.target.value }
+                        }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    الخدمات المضمنة (بالعربية - كل خدمة في سطر)
+                  </label>
+                  <textarea
+                    rows="5"
+                    value={pkg2FeaturesAr}
+                    onChange={(e) => setPkg2FeaturesAr(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    الخدمات المضمنة (بالإنجليزية - كل خدمة في سطر)
+                  </label>
+                  <textarea
+                    rows="5"
+                    value={pkg2FeaturesEn}
+                    onChange={(e) => setPkg2FeaturesEn(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="px-8 py-3 bg-zinc-100 hover:bg-white text-zinc-900 font-semibold rounded-xl transition-all shadow-lg hover:shadow-zinc-100/10 disabled:opacity-50"
+              >
+                {isSaving ? 'جاري الحفظ...' : 'حفظ التعديلات'}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Tab 3: Portfolio Manager (Full CRUD) */}
         {activeTab === 'projects' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Form Column */}
@@ -640,7 +1031,7 @@ function AdminDashboard() {
                     required
                     value={projectForm.title_en}
                     onChange={(e) => setProjectForm({ ...projectForm, title_en: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
                     placeholder="e.g. Aura Parfums"
                   />
                 </div>
@@ -664,7 +1055,7 @@ function AdminDashboard() {
                     type="url"
                     value={projectForm.live_url}
                     onChange={(e) => setProjectForm({ ...projectForm, live_url: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
                     placeholder="https://example.com"
                   />
                 </div>
@@ -675,7 +1066,7 @@ function AdminDashboard() {
                     type="url"
                     value={projectForm.image_url}
                     onChange={(e) => setProjectForm({ ...projectForm, image_url: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
                     placeholder="https://images.unsplash.com/..."
                   />
                 </div>
@@ -699,7 +1090,7 @@ function AdminDashboard() {
                     rows="3"
                     value={projectForm.desc_en}
                     onChange={(e) => setProjectForm({ ...projectForm, desc_en: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl focus:outline-none focus:border-zinc-500 text-white text-sm dir-ltr text-left font-english"
                     placeholder="Short description in English"
                   ></textarea>
                 </div>
@@ -790,7 +1181,7 @@ function AdminDashboard() {
 
                             <p className="text-xs text-zinc-400 mb-2 leading-relaxed line-clamp-2">{p.desc_ar}</p>
                             {p.desc_en && (
-                              <p className="text-xs text-zinc-500 dir-ltr text-left leading-relaxed line-clamp-2">{p.desc_en}</p>
+                              <p className="text-xs text-zinc-500 dir-ltr text-left leading-relaxed line-clamp-2 font-english">{p.desc_en}</p>
                             )}
 
                             {liveUrl && (
@@ -798,7 +1189,7 @@ function AdminDashboard() {
                                 href={liveUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-block mt-2 text-xs text-indigo-400 hover:text-indigo-300 underline dir-ltr text-left"
+                                className="inline-block mt-2 text-xs text-indigo-400 hover:text-indigo-300 underline dir-ltr text-left font-english"
                               >
                                 {liveUrl}
                               </a>
@@ -827,6 +1218,156 @@ function AdminDashboard() {
               )}
             </div>
           </div>
+        )}
+
+        {/* Tab 4: Contacts & Socials */}
+        {activeTab === 'contacts' && (
+          <form onSubmit={saveSettings} className="space-y-8">
+            <div className="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-6 backdrop-blur-md space-y-6">
+              <h2 className="text-lg font-bold text-white border-b border-zinc-800 pb-4">
+                إعدادات التواصل وحسابات التواصل الاجتماعي (Contacts & Socials)
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    رقم الواتساب (WhatsApp Phone Number)
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.contacts.whatsapp || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        contacts: { ...settings.contacts, whatsapp: e.target.value }
+                      })
+                    }
+                    placeholder="963951708141"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    اسم المستخدم في تليغرام (Telegram Username)
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.contacts.telegram || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        contacts: { ...settings.contacts, telegram: e.target.value }
+                      })
+                    }
+                    placeholder="aboudweb"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    رسالة الطلب المسبقة للواتساب (Lead Message Template AR)
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.contacts.whatsapp_message_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        contacts: { ...settings.contacts, whatsapp_message_ar: e.target.value }
+                      })
+                    }
+                    placeholder="مرحباً عبود، أود الاستفسار عن مشروع بالمواصفات التالية: {specs}. السعر التقديري: ${price}"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm"
+                  />
+                  <span className="text-[11px] text-zinc-500 mt-1 block">
+                    يمكنك استخدام المتغيرين {"{specs}"} و {"{price}"} ليتم استبدالهما تلقائياً بحسابات الحاسبة.
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    رابط ملف إنستغرام (Instagram Profile URL)
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.contacts.instagram || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        contacts: { ...settings.contacts, instagram: e.target.value }
+                      })
+                    }
+                    placeholder="https://instagram.com/aboudweb"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    رابط ملف منصة X / Twitter Profile URL
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.contacts.x || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        contacts: { ...settings.contacts, x: e.target.value }
+                      })
+                    }
+                    placeholder="https://x.com/aboudweb"
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    حقوق الفوتر (بالعربية)
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.contacts.copyright_ar || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        contacts: { ...settings.contacts, copyright_ar: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                    حقوق الفوتر (بالإنجليزية)
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.contacts.copyright_en || ''}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        contacts: { ...settings.contacts, copyright_en: e.target.value }
+                      })
+                    }
+                    className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-sm dir-ltr text-left font-english"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="px-8 py-3 bg-zinc-100 hover:bg-white text-zinc-900 font-semibold rounded-xl transition-all shadow-lg hover:shadow-zinc-100/10 disabled:opacity-50"
+              >
+                {isSaving ? 'جاري الحفظ...' : 'حفظ التعديلات'}
+              </button>
+            </div>
+          </form>
         )}
       </main>
     </div>

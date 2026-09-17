@@ -1,34 +1,29 @@
 import React from 'react';
+import { DEFAULT_SETTINGS } from '../defaultSettings';
 
 export function Hero({ lang, settings }) {
-  const availabilityStatus = settings?.availability_status?.value_ar !== 'closed';
-  const availabilityAr = settings?.availability?.value_ar || 'متاح لمشاريع جديدة هذا الشهر';
-  const availabilityEn = settings?.availability?.value_en || 'Available for new projects this month';
+  const activeSettings = settings || DEFAULT_SETTINGS;
 
-  const titleAr = settings?.hero_title?.value_ar || 'نصنع مواقع رقمية فائقة الدقة والسرعة';
-  const titleEn = settings?.hero_title?.value_en || 'Engineering high-performance digital experiences';
+  const availabilityStatus = activeSettings.hero?.availability_active ?? true;
+  const badgeText = lang === 'ar'
+    ? (activeSettings.hero?.availability_ar || DEFAULT_SETTINGS.hero.availability_ar)
+    : (activeSettings.hero?.availability_en || DEFAULT_SETTINGS.hero.availability_en);
 
-  const subtitleAr = settings?.hero_subtitle?.value_ar || 'تصميم عصري وحلول ويب متطورة تمنح علامتك التجارية الثقة والنمو الذي تستحقه.';
-  const subtitleEn = settings?.hero_subtitle?.value_en || 'Modern web architecture and bespoke digital design crafted to turn visitors into clients.';
+  const title = lang === 'ar'
+    ? (activeSettings.hero?.title_ar || DEFAULT_SETTINGS.hero.title_ar)
+    : (activeSettings.hero?.title_en || DEFAULT_SETTINGS.hero.title_en);
 
-  const content = {
-    ar: {
-      badge: availabilityAr,
-      title: titleAr,
-      subtitle: subtitleAr,
-      ctaPrimary: 'احسب تكلفة مشروعك',
-      ctaSecondary: 'استكشف معرض الأعمال'
-    },
-    en: {
-      badge: availabilityEn,
-      title: titleEn,
-      subtitle: subtitleEn,
-      ctaPrimary: 'Calculate Project Cost',
-      ctaSecondary: 'Explore Portfolio'
-    }
-  };
+  const subtitle = lang === 'ar'
+    ? (activeSettings.hero?.subtitle_ar || DEFAULT_SETTINGS.hero.subtitle_ar)
+    : (activeSettings.hero?.subtitle_en || DEFAULT_SETTINGS.hero.subtitle_en);
 
-  const text = content[lang];
+  const ctaPrimary = lang === 'ar'
+    ? (activeSettings.hero?.cta_primary_ar || DEFAULT_SETTINGS.hero.cta_primary_ar)
+    : (activeSettings.hero?.cta_primary_en || DEFAULT_SETTINGS.hero.cta_primary_en);
+
+  const ctaSecondary = lang === 'ar'
+    ? (activeSettings.hero?.cta_secondary_ar || DEFAULT_SETTINGS.hero.cta_secondary_ar)
+    : (activeSettings.hero?.cta_secondary_en || DEFAULT_SETTINGS.hero.cta_secondary_en);
 
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
@@ -48,26 +43,26 @@ export function Hero({ lang, settings }) {
           )}
         </span>
         <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          {text.badge}
+          {badgeText}
         </span>
       </div>
 
       {/* Hero Content */}
       <div className="max-w-4xl text-center space-y-8">
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight md:leading-tight">
-          {text.title}
+          {title}
         </h1>
         <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-          {text.subtitle}
+          {subtitle}
         </p>
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <a href="#calculator" className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300">
-            {text.ctaPrimary}
+            {ctaPrimary}
           </a>
           <a href="#portfolio" className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors duration-300 font-medium">
-            {text.ctaSecondary}
+            {ctaSecondary}
           </a>
         </div>
       </div>

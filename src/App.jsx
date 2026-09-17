@@ -6,11 +6,12 @@ import { Portfolio } from './components/Portfolio';
 import { Pricing } from './components/Pricing';
 import { Footer } from './components/Footer';
 import { supabase } from './supabase';
+import { DEFAULT_SETTINGS, mergeSettings } from './defaultSettings';
 
 function App() {
   const [lang, setLang] = useState('ar');
   const [theme, setTheme] = useState('dark');
-  const [siteSettings, setSiteSettings] = useState(null);
+  const [siteSettings, setSiteSettings] = useState(DEFAULT_SETTINGS);
   const [customProjects, setCustomProjects] = useState(null);
 
   useEffect(() => {
@@ -35,20 +36,19 @@ function App() {
     // Fetch dynamic data from Supabase
     async function loadData() {
       try {
-        // Fetch all settings
+        // Fetch unified settings from 'settings' table where id = 1
         const { data: settingsData, error: settingsErr } = await supabase
           .from('settings')
-          .select('*');
+          .select('data')
+          .eq('id', 1);
 
-        if (settingsData && !settingsErr && Array.isArray(settingsData)) {
-          const settingsMap = {};
-          settingsData.forEach(item => {
-            settingsMap[item.key] = item;
-          });
-          setSiteSettings(settingsMap);
+        if (settingsData && settingsData.length > 0 && settingsData[0].data && !settingsErr) {
+          setSiteSettings(mergeSettings(settingsData[0].data));
+        } else {
+          setSiteSettings(DEFAULT_SETTINGS);
         }
 
-        // Fetch projects
+        // Fetch projects from 'projects' table
         const { data: projectsData, error: projectsErr } = await supabase
           .from('projects')
           .select('*')
@@ -59,6 +59,7 @@ function App() {
         }
       } catch (e) {
         console.log('Supabase fetch notice:', e);
+        setSiteSettings(DEFAULT_SETTINGS);
       }
     }
 
@@ -93,7 +94,7 @@ function App() {
   }, [lang, theme]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-50 transition-colors duration-300">
+    <div className="min-h-screen bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-50 transition-colors duration-300 font-arabic">
       <Navbar lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} />
       <main>
         <Hero lang={lang} settings={siteSettings} />
@@ -101,7 +102,7 @@ function App() {
         <Portfolio lang={lang} customProjects={customProjects} />
         <Pricing lang={lang} settings={siteSettings} />
       </main>
-      <Footer settings={siteSettings} />
+      <Footer lang={lang} settings={siteSettings} />
     </div>
   );
 }
