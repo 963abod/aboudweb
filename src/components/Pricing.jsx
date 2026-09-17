@@ -1,97 +1,56 @@
 import React from 'react';
 import { Check } from 'lucide-react';
+import { DEFAULT_SETTINGS } from '../defaultSettings';
 
 export function Pricing({ lang, settings }) {
-  const starterPrice = settings?.starter_tier_price?.value_ar || '300';
-  const displayStarterPrice = starterPrice.startsWith('$') ? starterPrice : `$${starterPrice}`;
+  const activeSettings = settings || DEFAULT_SETTINGS;
 
-  const content = {
-    ar: {
-      title: 'باقات الأسعار',
-      subtitle: 'اختر الباقة الأنسب لاحتياجات عملك',
-      packages: [
-        {
-          id: 'starter',
-          name: 'باقة الانطلاق',
-          price: displayStarterPrice,
-          desc: 'مثالية للشركات الناشئة والمشاريع الصغيرة.',
-          features: [
-            'موقع متجاوب بالكامل 1-3 صفحات',
-            'تصميم مخصص وسرعة قياسية',
-            'تهيئة لمحركات البحث (SEO)',
-            'ربط فوري بالواتساب وتليغرام',
-            'دعم فني متواصل لمدة شهر'
-          ],
-          cta: 'ابدأ الآن',
-          highlighted: false
-        },
-        {
-          id: 'custom',
-          name: 'باقة الحلول المخصصة',
-          price: 'تسعير مخصص',
-          desc: 'للمشاريع الكبيرة والمنصات المعقدة.',
-          features: [
-            'متاجر إلكترونية كاملة',
-            'أنظمة حجز وإدارة محتوى',
-            'ربط بوابات دفع',
-            'قواعد بيانات مخصصة',
-            'دعم لغات متعددة'
-          ],
-          cta: 'طلب تسعير',
-          highlighted: true
-        }
-      ]
+  const pkg1 = activeSettings.pricing?.package1 || DEFAULT_SETTINGS.pricing.package1;
+  const pkg2 = activeSettings.pricing?.package2 || DEFAULT_SETTINGS.pricing.package2;
+
+  const starterPriceRaw = pkg1.price || '300';
+  const displayStarterPrice = String(starterPriceRaw).startsWith('$') ? starterPriceRaw : `$${starterPriceRaw}`;
+
+  const customPriceDisplay = lang === 'ar'
+    ? (pkg2.price_ar || DEFAULT_SETTINGS.pricing.package2.price_ar)
+    : (pkg2.price_en || DEFAULT_SETTINGS.pricing.package2.price_en);
+
+  const packages = [
+    {
+      id: 'starter',
+      name: lang === 'ar' ? pkg1.name_ar : pkg1.name_en,
+      price: displayStarterPrice,
+      desc: lang === 'ar' ? pkg1.desc_ar : pkg1.desc_en,
+      features: (lang === 'ar' ? pkg1.features_ar : pkg1.features_en) || [],
+      cta: lang === 'ar' ? 'ابدأ الآن' : 'Start Now',
+      highlighted: false
     },
-    en: {
-      title: 'Pricing & Packages',
-      subtitle: 'Choose the best plan for your business needs',
-      packages: [
-        {
-          id: 'starter',
-          name: 'Starter Package',
-          price: displayStarterPrice,
-          desc: 'Perfect for startups and small businesses.',
-          features: [
-            'Fully responsive 1-3 page website',
-            'Custom design & high performance',
-            'Basic SEO optimization',
-            'WhatsApp & Telegram integration',
-            '1 month continuous technical support'
-          ],
-          cta: 'Start Now',
-          highlighted: false
-        },
-        {
-          id: 'custom',
-          name: 'Custom Solutions',
-          price: 'Custom Quote',
-          desc: 'For large projects and complex platforms.',
-          features: [
-            'Full e-commerce solutions',
-            'Booking systems & CMS',
-            'Payment gateway integrations',
-            'Custom database architecture',
-            'Multi-language support'
-          ],
-          cta: 'Request Quote',
-          highlighted: true
-        }
-      ]
+    {
+      id: 'custom',
+      name: lang === 'ar' ? pkg2.name_ar : pkg2.name_en,
+      price: customPriceDisplay,
+      desc: lang === 'ar' ? pkg2.desc_ar : pkg2.desc_en,
+      features: (lang === 'ar' ? pkg2.features_ar : pkg2.features_en) || [],
+      cta: lang === 'ar' ? 'طلب تسعير' : 'Request Quote',
+      highlighted: true
     }
-  };
+  ];
 
-  const text = content[lang];
+  const title = lang === 'ar' ? 'باقات الأسعار' : 'Pricing & Packages';
+  const subtitle = lang === 'ar'
+    ? 'اختر الباقة الأنسب لاحتياجات عملك'
+    : 'Choose the best plan for your business needs';
 
   return (
     <section id="pricing" className="py-24 px-4 bg-zinc-50/50 dark:bg-[#09090b]">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">{text.title}</h2>
-          <p className="text-zinc-500 dark:text-zinc-400">{text.subtitle}</p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{title}</h2>
+          <p className="text-zinc-500 dark:text-zinc-400">{subtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {text.packages.map((pkg) => (
+          {packages.map((pkg) => (
             <div
               key={pkg.id}
               className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-300 ${
@@ -120,7 +79,7 @@ export function Pricing({ lang, settings }) {
                   {pkg.price}
                 </span>
                 {pkg.id === 'starter' && (
-                  <span className={`text-sm ml-2 ${pkg.highlighted ? 'text-zinc-400 dark:text-zinc-500' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                  <span className={`text-sm ml-2 mr-2 ${pkg.highlighted ? 'text-zinc-400 dark:text-zinc-500' : 'text-zinc-500 dark:text-zinc-400'}`}>
                     {lang === 'ar' ? 'يبدأ من' : 'Starting at'}
                   </span>
                 )}

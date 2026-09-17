@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Send, MessageCircle } from 'lucide-react';
-import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { DEFAULT_SETTINGS } from '../defaultSettings';
 
 export function CostEstimator({ lang, settings }) {
+  const activeSettings = settings || DEFAULT_SETTINGS;
+
   const content = {
     ar: {
       title: 'حاسبة التكلفة',
@@ -45,36 +47,30 @@ export function CostEstimator({ lang, settings }) {
 
   const text = content[lang];
 
-  // Base price dynamically from settings or fallback to 300
-  const basePriceSetting = settings?.calculator_base_price?.value_ar ? Number(settings.calculator_base_price.value_ar) : 300;
-  const whatsappNumber = settings?.contact_whatsapp?.value_ar || '963951708141';
-  const telegramUsername = settings?.contact_telegram?.value_ar || 'aboudweb';
+  // Base price dynamically from settings
+  const basePrice = Number(activeSettings.calculator?.base_price ?? 300);
+  const addons = activeSettings.calculator?.addons || DEFAULT_SETTINGS.calculator.addons;
+
+  const whatsappNumber = activeSettings.contacts?.whatsapp || '963951708141';
+  const telegramUsername = activeSettings.contacts?.telegram || 'aboudweb';
 
   const [selectedType, setSelectedType] = useState('landing');
   const [selectedFeatures, setSelectedFeatures] = useState([]);
-  const [price, setPrice] = useState(basePriceSetting || 300);
+  const [price, setPrice] = useState(basePrice);
 
-  const prices = {
-    types: {
-      'landing': basePriceSetting || 300,
-      'business': (basePriceSetting || 300) + 200,
-      'ecommerce': (basePriceSetting || 300) + 700
-    },
-    features: {
-      'multilang': 150,
-      'cms': 250,
-      'integrations': 200,
-      'payment': 200
-    }
+  const typeOffsets = {
+    'landing': 0,
+    'business': 200,
+    'ecommerce': 700
   };
 
   useEffect(() => {
-    let newPrice = prices.types[selectedType];
+    let newPrice = basePrice + typeOffsets[selectedType];
     selectedFeatures.forEach(feature => {
-      newPrice += prices.features[feature];
+      newPrice += Number(addons[feature] ?? 0);
     });
     setPrice(newPrice);
-  }, [selectedType, selectedFeatures, basePriceSetting]);
+  }, [selectedType, selectedFeatures, basePrice, addons]);
 
   const toggleFeature = (feature) => {
     setSelectedFeatures(prev =>
@@ -90,7 +86,15 @@ export function CostEstimator({ lang, settings }) {
       ...selectedFeatures.map(f => text.features[f])
     ].join(' + ');
 
-    return encodeURIComponent(`مرحباً عبود، أود الاستفسار عن مشروع بالمواصفات التالية: ${specs}. السعر التقديري: $${price}`);
+    const template = lang === 'ar'
+      ? (activeSettings.contacts?.whatsapp_message_ar || DEFAULT_SETTINGS.contacts.whatsapp_message_ar)
+      : (activeSettings.contacts?.whatsapp_message_en || DEFAULT_SETTINGS.contacts.whatsapp_message_en);
+
+    let msg = template.replace('{specs}', specs).replace('{price}', price);
+    if (!msg.includes(specs)) {
+      msg = `${msg} (${specs} - $${price})`;
+    }
+    return encodeURIComponent(msg);
   };
 
   return (
@@ -138,6 +142,9 @@ export function CostEstimator({ lang, settings }) {
                   )}
                 >
                   {label}
+                  <span className="text-xs opacity-75 mr-1.5 ml-1.5">
+                    (+${addons[key] ?? 0})
+                  </span>
                 </button>
               ))}
             </div>
