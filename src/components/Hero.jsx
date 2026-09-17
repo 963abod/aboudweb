@@ -1,16 +1,16 @@
 import React from 'react';
 
-export function Hero({ lang }) {
+export function Hero({ lang, availabilityText }) {
   const content = {
     ar: {
-      badge: 'متاح لمشاريع جديدة هذا الشهر',
+      badge: availabilityText?.ar || 'متاح لمشاريع جديدة هذا الشهر',
       title: 'نصنع مواقع رقمية فائقة الدقة والسرعة',
       subtitle: 'تصميم عصري وحلول ويب متطورة تمنح علامتك التجارية الثقة والنمو الذي تستحقه.',
       ctaPrimary: 'احسب تكلفة مشروعك',
       ctaSecondary: 'استكشف معرض الأعمال'
     },
     en: {
-      badge: 'Available for new projects this month',
+      badge: availabilityText?.en || 'Available for new projects this month',
       title: 'Engineering high-performance digital experiences',
       subtitle: 'Modern web architecture and bespoke digital design crafted to turn visitors into clients.',
       ctaPrimary: 'Calculate Project Cost',
@@ -19,6 +19,7 @@ export function Hero({ lang }) {
   };
 
   const text = content[lang];
+  const badgeDisplay = (lang === 'ar' ? availabilityText?.ar : availabilityText?.en) || text.badge;
 
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
@@ -32,7 +33,7 @@ export function Hero({ lang }) {
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
         </span>
         <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          {text.badge}
+          {badgeDisplay}
         </span>
       </div>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-export function Portfolio({ lang }) {
+export function Portfolio({ lang, customProjects }) {
   const [activeFilter, setActiveFilter] = useState('all');
 
   const content = {
@@ -74,9 +74,21 @@ export function Portfolio({ lang }) {
   };
 
   const text = content[lang];
+
+  // If custom projects exist from Supabase, map them to current language view format
+  const casesToDisplay = (customProjects && customProjects.length > 0)
+    ? customProjects.map(p => ({
+        id: p.id,
+        title: p.title,
+        desc: lang === 'ar' ? (p.desc_ar || p.desc_en) : (p.desc_en || p.desc_ar),
+        category: p.category || 'ecommerce',
+        color: p.color || 'from-amber-500/20 to-zinc-900/50'
+      }))
+    : text.cases;
+
   const filteredCases = activeFilter === 'all'
-    ? text.cases
-    : text.cases.filter(c => c.category === activeFilter);
+    ? casesToDisplay
+    : casesToDisplay.filter(c => c.category === activeFilter);
 
   return (
     <section id="portfolio" className="py-24 px-4">
@@ -116,7 +128,7 @@ export function Portfolio({ lang }) {
 
               <div className="relative z-10">
                 <span className="inline-block px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs font-medium mb-4 backdrop-blur-sm">
-                  {text.filters[item.category]}
+                  {text.filters[item.category] || item.category}
                 </span>
                 <h3 className="text-2xl font-bold mb-2 text-zinc-900 dark:text-zinc-50">
                   {item.title}
