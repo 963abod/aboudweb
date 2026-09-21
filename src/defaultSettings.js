@@ -3,7 +3,7 @@ export const DEFAULT_SETTINGS = {
     availability_active: true,
     availability_ar: 'متاح لمشاريع جديدة هذا الشهر',
     availability_en: 'Available for new projects this month',
-    title_ar: 'نصنع مواقع رقمية فائقة الدقة والسرعة',
+    title_ar: ' مواقع رقمية فائقة الدقة والسرعة',
     title_en: 'Engineering high-performance digital experiences',
     subtitle_ar: 'تصميم عصري وحلول ويب متطورة تمنح علامتك التجارية الثقة والنمو الذي تستحقه.',
     subtitle_en: 'Modern web architecture and bespoke digital design crafted to turn visitors into clients.',
