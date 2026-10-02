@@ -7,8 +7,8 @@ export const DEFAULT_SETTINGS = {
     title_en: 'We turn ideas into digital experiences.',
     subtitle_ar: 'استراتيجية، تصميم، وتقنية — نبني تجارب رقمية مصممة لتكبر معك.',
     subtitle_en: 'Strategy, design, and technology — we build digital experiences designed to grow with you.',
-    cta_primary_ar: 'احسب تكلفة مشروعك',
-    cta_primary_en: 'Calculate Project Cost',
+    cta_primary_ar: 'ابدأ مشروعك',
+    cta_primary_en: 'Start Your Project',
     cta_secondary_ar: 'استكشف معرض الأعمال',
     cta_secondary_en: 'Explore Portfolio'
   },
