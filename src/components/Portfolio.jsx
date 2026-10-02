@@ -20,6 +20,18 @@ export function Portfolio({ lang, customProjects }) {
       },
       previewBtn: 'معاينة الموقع ↗',
       cases: []
+    },
+    en: {
+      title: 'Portfolio',
+      subtitle: 'Featured case studies combining premium design with robust engineering',
+      filters: {
+        all: 'All',
+        ecommerce: 'E-Commerce',
+        corporate: 'Corporate',
+        landing: 'Landing Pages'
+      },
+      previewBtn: 'Visit Live Site ↗',
+      cases: []
     }
   };
 
