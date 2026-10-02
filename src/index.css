@@ -128,7 +128,7 @@ body{
 .bg-zinc-900{background-color:#2a0800!important}
 .text-zinc-50{color:#f8f2f0!important}
 .dark body{background:#2a0800;color:#f3e9e7}
-.dark .dark\\:bg-zinc-950,.dark .dark\\:bg-\\[\\#09090b\\]{background-color:#2a0800!important}
+.dark .dark\\:bg-zinc-950{background-color:#2a0800!important}
 .dark .dark\\:bg-zinc-900{background-color:#3b1710!important}
 .dark .dark\\:text-zinc-50,.dark .dark\\:text-white{color:#f8f2f0!important}
 .dark .dark\\:text-zinc-400,.dark .dark\\:text-zinc-300{color:#c09891!important}
