@@ -182,45 +182,7 @@ function App() {
       <Navbar lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} />
       <main>
         <Hero lang={lang} settings={siteSettings} />
-        <section id="approach" className="py-28 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-[.9fr_1.1fr] gap-16 items-end">
-            <div>
-              <span className="text-[10px] tracking-[.24em] text-zinc-500 uppercase">
-                {lang === 'ar' ? 'HOW WE WORK' : 'HOW WE WORK'}
-              </span>
-              <h2 className="mt-5 text-4xl md:text-6xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-                {lang === 'ar' ? 'من الفكرة إلى تجربة رقمية متكاملة.' : 'From idea to a complete digital experience.'}
-              </h2>
-            </div>
-            <p className="max-w-xl lg:ml-auto text-zinc-500 dark:text-zinc-400 leading-8">
-              {lang === 'ar'
-                ? 'كل مشروع يبدأ بفهم النشاط والهدف، ثم يتحول إلى تصميم واضح، تجربة سريعة، وتنفيذ قابل للتوسع.'
-                : 'Every project starts with the business and its goal, then becomes a clear design, fast experience, and scalable implementation.'}
-            </p>
-          </div>
-          <div className="mt-16 grid md:grid-cols-3 gap-px bg-zinc-200/70 dark:bg-zinc-800/70">
-            {(lang === 'ar'
-              ? [
-                  ['01', 'اكتشاف', 'نفهم النشاط، الجمهور، وما الذي يجب أن يحققه الموقع.'],
-                  ['02', 'تصميم وبناء', 'نحوّل الفكرة إلى واجهة دقيقة وسريعة ومصممة حول المستخدم.'],
-                  ['03', 'إطلاق وتطوير', 'نطلق المشروع بشكل احترافي ونبقيه جاهزاً للتوسع والتحسين.']
-                ]
-              : [
-                  ['01', 'Discover', 'Understand the business, audience, and what the site needs to achieve.'],
-                  ['02', 'Design & Build', 'Turn the idea into a precise, fast interface built around the user.'],
-                  ['03', 'Launch & Evolve', 'Launch professionally and keep the product ready to grow.']
-                ]
-            ).map(([number, title, desc]) => (
-              <article key={number} className="group bg-zinc-50 dark:bg-[#09090b] p-8 md:p-10 min-h-[230px] transition-colors duration-500 hover:bg-white dark:hover:bg-zinc-900/70">
-                <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">{number}</span>
-                <h3 className="mt-14 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{title}</h3>
-                <p className="mt-4 text-sm leading-7 text-zinc-500 dark:text-zinc-400 max-w-sm">{desc}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+        <StorySection lang={lang} />
         <Portfolio lang={lang} customProjects={customProjects} />
         <Pricing lang={lang} settings={siteSettings} />
       </main>
