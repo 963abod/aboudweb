@@ -10,12 +10,12 @@ export function Hero({ lang, settings }) {
     : (activeSettings.hero?.availability_en || DEFAULT_SETTINGS.hero.availability_en);
 
   const title = lang === 'ar'
-    ? (activeSettings.hero?.title_ar || DEFAULT_SETTINGS.hero.title_ar)
-    : (activeSettings.hero?.title_en || DEFAULT_SETTINGS.hero.title_en);
+    ? DEFAULT_SETTINGS.hero.title_ar
+    : DEFAULT_SETTINGS.hero.title_en;
 
   const subtitle = lang === 'ar'
-    ? (activeSettings.hero?.subtitle_ar || DEFAULT_SETTINGS.hero.subtitle_ar)
-    : (activeSettings.hero?.subtitle_en || DEFAULT_SETTINGS.hero.subtitle_en);
+    ? DEFAULT_SETTINGS.hero.subtitle_ar
+    : DEFAULT_SETTINGS.hero.subtitle_en;
 
   const ctaPrimary = lang === 'ar'
     ? (activeSettings.hero?.cta_primary_ar || DEFAULT_SETTINGS.hero.cta_primary_ar)
