@@ -148,6 +148,8 @@ export function Portfolio({ lang, customProjects }) {
 
   const len = filteredCases.length;
 
+  const handleFilterChange = (key) => { setActiveFilter(key); setSpotlightIndex(0); };
+
   const handleSpotlightKeyDown = (e, index) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -208,69 +210,45 @@ export function Portfolio({ lang, customProjects }) {
           ))}
         </div>
 
-        {/* Scrolltide-style Spotlight Carousel */}
-        <div
-          className="spotlight-wrap"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          <div className="spotlight-container" dir="ltr">
-            <div className="spotlight-rail">
+        {/* Scrolltide-style Fan Deck */}
+        <div className="fan-deck-wrap">
+          <div className="fan-deck" dir="ltr" role="region" aria-roledescription="carousel" aria-label={text.title} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+            <div className="fan-deck-hinge">
               {filteredCases.map((item, i) => {
-                const isActive = i === spotlightIndex;
-
+                const offset = i - spotlightIndex;
+                const isActive = offset === 0;
+                const abs = Math.abs(offset);
+                const clamped = Math.max(-3, Math.min(3, offset));
+                const rotation = isActive ? 0 : clamped * 10;
+                const x = clamped * 84;
+                const y = isActive ? -18 : Math.min(abs * 8, 24);
+                const scale = isActive ? 1 : Math.max(.86, 1 - abs * .045);
                 return (
-                  <article
-                    key={item.id || i}
-                    className={twMerge('spotlight-card', isActive && 'is-active')}
-                    onMouseEnter={() => setSpotlightIndex(i)}
-                    onFocus={() => setSpotlightIndex(i)}
-                    onKeyDown={(e) => handleSpotlightKeyDown(e, i)}
-                    tabIndex={0}
-                    aria-current={isActive ? 'true' : undefined}
-                    aria-label={item.title}
-                  >
-                    <div className="spotlight-media">
-                      {item.imageUrl ? (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.title}
-                          loading={i < 3 ? 'eager' : 'lazy'}
-                          draggable="false"
-                        />
-                      ) : (
-                        <div className={twMerge('spotlight-fallback', `bg-gradient-to-br ${item.color}`)}>
-                          <span>{item.title}</span>
-                        </div>
-                      )}
-
-                      <div className="spotlight-overlay" />
-
-                      <div className="spotlight-caption">
-                        <span className="spotlight-kicker">
-                          {text.filters[item.category] || item.category}
-                        </span>
-                        <h3>{item.title}</h3>
-                        <p>{item.desc}</p>
-
-                        {isActive && item.liveUrl && (
-                          <a
-                            href={item.liveUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="spotlight-link"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {text.previewBtn}
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
+                  <article key={item.id || i} className={twMerge('fan-deck-card', isActive && 'is-active')}
+                    style={{'--fan-x':'calc(-50% + '+x+'px)','--fan-y':y+'px','--fan-rotate':rotation+'deg','--fan-scale':scale,zIndex:isActive?30:20-abs}}
+                    onClick={() => setSpotlightIndex(i)} onMouseEnter={() => setSpotlightIndex(i)} onFocus={() => setSpotlightIndex(i)}
+                    onKeyDown={(e) => handleSpotlightKeyDown(e, i)} tabIndex={0} aria-current={isActive?'true':undefined} aria-label={item.title}>
+                    <div className="fan-deck-card-inner">
+                      {item.imageUrl ? <img src={item.imageUrl} alt={item.title} loading={i<3?'eager':'lazy'} draggable="false" /> :
+                        <div className={twMerge('fan-deck-fallback','bg-gradient-to-br '+item.color)}><span>{item.title}</span></div>}
+                      <div className="fan-deck-shade" />
+                      <div className="fan-deck-caption">
+                        <span className="fan-deck-kicker">{text.filters[item.category] || item.category}</span>
+                        <h3>{item.title}</h3><p>{item.desc}</p>
+                        {isActive && item.liveUrl && <a href={item.liveUrl} target="_blank" rel="noreferrer" className="fan-deck-link" onClick={(e)=>e.stopPropagation()}>
+                          {text.previewBtn}<ExternalLink className="w-4 h-4" />
+                        </a>}
                       </div>
                     </div>
                   </article>
                 );
               })}
             </div>
+          </div>
+          <div className="fan-deck-controls" dir="ltr">
+            <button type="button" className="fan-deck-control" onClick={()=>setSpotlightIndex((spotlightIndex-1+len)%Math.max(len,1))} disabled={len<2} aria-label="Previous project">←</button>
+            <div className="fan-deck-indicator" aria-live="polite"><span>{String(Math.min(spotlightIndex+1,Math.max(len,1))).padStart(2,'0')}</span><i/><span>{String(Math.max(len,0)).padStart(2,'0')}</span></div>
+            <button type="button" className="fan-deck-control" onClick={()=>setSpotlightIndex((spotlightIndex+1)%Math.max(len,1))} disabled={len<2} aria-label="Next project">→</button>
           </div>
         </div>
 
