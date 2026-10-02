@@ -19,119 +19,16 @@ export function Portfolio({ lang, customProjects }) {
         landing: 'صفحات هبوط'
       },
       previewBtn: 'معاينة الموقع ↗',
-      cases: [
-        {
-          id: 1,
-          title: 'Aura Parfums',
-          desc: 'تجربة تسوق فاخرة لعلامة عطور خليجية مع متجر إلكتروني متكامل.',
-          category: 'ecommerce',
-          liveUrl: 'https://example.com/aura',
-          imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=800&auto=format&fit=crop',
-          color: 'from-amber-500/20 to-zinc-900/50'
-        },
-        {
-          id: 2,
-          title: 'Nova Metrics',
-          desc: 'واجهة مستخدم متطورة لمنصة تحليلات بيانات عالية الأداء SaaS.',
-          category: 'corporate',
-          liveUrl: 'https://example.com/nova',
-          imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
-          color: 'from-blue-500/20 to-zinc-900/50'
-        },
-        {
-          id: 3,
-          title: 'Vanguard Studio',
-          desc: 'معرض أعمال بتصميم معماري مبسط واستوديو إبداعي.',
-          category: 'landing',
-          liveUrl: 'https://example.com/vanguard',
-          imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop',
-          color: 'from-rose-500/20 to-zinc-900/50'
-        },
-        {
-          id: 4,
-          title: 'Apex Performance',
-          desc: 'منصة رياضية وتطبيق ويب لإدارة التمارين وتتبع اللياقة البدنية.',
-          category: 'landing',
-          liveUrl: 'https://example.com/apex',
-          imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop',
-          color: 'from-emerald-500/20 to-zinc-900/50'
-        },
-        {
-          id: 5,
-          title: 'Luminary Fintech',
-          desc: 'حلول مالية رقمية متقدمة وإدارة محافظ استثمارية آمنة.',
-          category: 'corporate',
-          liveUrl: 'https://example.com/luminary',
-          imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=800&auto=format&fit=crop',
-          color: 'from-purple-500/20 to-zinc-900/50'
-        }
-      ]
-    },
-    en: {
-      title: 'Portfolio',
-      subtitle: 'Featured case studies combining premium design with robust engineering',
-      filters: {
-        all: 'All',
-        ecommerce: 'E-Commerce',
-        corporate: 'Corporate',
-        landing: 'Landing Pages'
-      },
-      previewBtn: 'Visit Live Site ↗',
-      cases: [
-        {
-          id: 1,
-          title: 'Aura Parfums',
-          desc: 'Luxury Gulf fragrance brand e-commerce experience.',
-          category: 'ecommerce',
-          liveUrl: 'https://example.com/aura',
-          imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=800&auto=format&fit=crop',
-          color: 'from-amber-500/20 to-zinc-900/50'
-        },
-        {
-          id: 2,
-          title: 'Nova Metrics',
-          desc: 'High-scale analytics platform & SaaS UI.',
-          category: 'corporate',
-          liveUrl: 'https://example.com/nova',
-          imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
-          color: 'from-blue-500/20 to-zinc-900/50'
-        },
-        {
-          id: 3,
-          title: 'Vanguard Studio',
-          desc: 'Minimalist architectural design portfolio.',
-          category: 'landing',
-          liveUrl: 'https://example.com/vanguard',
-          imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop',
-          color: 'from-rose-500/20 to-zinc-900/50'
-        },
-        {
-          id: 4,
-          title: 'Apex Performance',
-          desc: 'Modern athletic platform and web app for fitness tracking.',
-          category: 'landing',
-          liveUrl: 'https://example.com/apex',
-          imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop',
-          color: 'from-emerald-500/20 to-zinc-900/50'
-        },
-        {
-          id: 5,
-          title: 'Luminary Fintech',
-          desc: 'Advanced digital financial platform and secure portfolio UI.',
-          category: 'corporate',
-          liveUrl: 'https://example.com/luminary',
-          imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=800&auto=format&fit=crop',
-          color: 'from-purple-500/20 to-zinc-900/50'
-        }
-      ]
+      cases: []
     }
   };
 
   const text = content[lang];
 
   // If custom projects exist from Supabase, map them to current language view format
-  const casesToDisplay = (customProjects && customProjects.length > 0)
-    ? customProjects.map(p => ({
+  const casesToDisplay = customProjects === null
+    ? []
+    : customProjects.map(p => ({
         id: p.id,
         title: lang === 'ar' ? (p.title_ar || p.title) : (p.title_en || p.title),
         desc: lang === 'ar' ? (p.desc_ar || p.desc_en) : (p.desc_en || p.desc_ar),
@@ -139,8 +36,7 @@ export function Portfolio({ lang, customProjects }) {
         liveUrl: p.live_url || p.url || '',
         imageUrl: p.image_url || p.cover_image || '',
         color: p.color || 'from-amber-500/20 to-zinc-900/50'
-      }))
-    : text.cases;
+      }));
 
   const filteredCases = activeFilter === 'all'
     ? casesToDisplay
