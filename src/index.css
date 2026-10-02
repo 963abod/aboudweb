@@ -117,3 +117,51 @@
 @media(prefers-reduced-motion:reduce){
   .hero-orbit,.hero-core-glow,.hero-core-dot{animation:none}
 }
+
+
+/* Scroll-reactive hero transformation */
+.hero-premium{--hero-scroll:0}
+.hero-premium .hero-orbit-system{
+  transform:translate(-50%,calc(-50% + (var(--hero-scroll) * -90px)))
+    scale(calc(1 + (var(--hero-scroll) * .24)))
+    rotate(calc(var(--hero-scroll) * 16deg));
+  opacity:calc(.72 - (var(--hero-scroll) * .28));
+  transition:opacity .15s linear;
+}
+.hero-premium .hero-title{
+  transform:translateY(calc(var(--hero-scroll) * -72px))
+    scale(calc(1 - (var(--hero-scroll) * .14)));
+  opacity:calc(1 - (var(--hero-scroll) * .45));
+  transition:transform .12s linear,opacity .12s linear;
+  transform-origin:50% 50%;
+}
+.hero-premium .hero-subtitle{
+  transform:translateY(calc(var(--hero-scroll) * -105px));
+  opacity:calc(1 - (var(--hero-scroll) * .8));
+}
+.hero-premium .hero-actions{
+  transform:translateY(calc(var(--hero-scroll) * -125px))
+    scale(calc(1 - (var(--hero-scroll) * .08)));
+  opacity:calc(1 - (var(--hero-scroll) * 1.15));
+}
+.hero-premium .hero-orbit-core{
+  transform:translate(-50%,calc(-50% + (var(--hero-scroll) * -18px)))
+    scale(calc(1 + (var(--hero-scroll) * .35)));
+}
+@media(max-width:640px){
+  .hero-premium .hero-orbit-system{
+    transform:translate(-50%,calc(-50% + (var(--hero-scroll) * -55px)))
+      scale(calc(1 + (var(--hero-scroll) * .16)))
+      rotate(calc(var(--hero-scroll) * 10deg));
+  }
+  .hero-premium .hero-title{transform:translateY(calc(var(--hero-scroll) * -42px)) scale(calc(1 - (var(--hero-scroll) * .08)))}
+  .hero-premium .hero-subtitle{transform:translateY(calc(var(--hero-scroll) * -60px))}
+  .hero-premium .hero-actions{transform:translateY(calc(var(--hero-scroll) * -75px))}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-premium .hero-orbit-system,
+  .hero-premium .hero-title,
+  .hero-premium .hero-subtitle,
+  .hero-premium .hero-actions,
+  .hero-premium .hero-orbit-core{transform:none;opacity:1}
+}
