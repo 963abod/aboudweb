@@ -219,13 +219,14 @@ export function Portfolio({ lang, customProjects }) {
                 const isActive = offset === 0;
                 const abs = Math.abs(offset);
                 const clamped = Math.max(-3, Math.min(3, offset));
-                const rotation = isActive ? 0 : clamped * 10;
-                const x = clamped * 84;
-                const y = isActive ? -18 : Math.min(abs * 8, 24);
-                const scale = isActive ? 1 : Math.max(.86, 1 - abs * .045);
+                const rotation = isActive ? 0 : clamped * 12;
+                const x = clamped * 104;
+                const y = isActive ? -20 : Math.min(abs * 10, 30);
+                const scale = isActive ? 1 : Math.max(.88, 1 - abs * .04);
+                const z = isActive ? 28 : Math.max(0, 18 - abs * 6);
                 return (
                   <article key={item.id || i} className={twMerge('fan-deck-card', isActive && 'is-active')}
-                    style={{'--fan-x':'calc(-50% + '+x+'px)','--fan-y':y+'px','--fan-rotate':rotation+'deg','--fan-scale':scale,zIndex:isActive?30:20-abs}}
+                    style={{'--fan-x':'calc(-50% + '+x+'px)','--fan-y':y+'px','--fan-rotate':rotation+'deg','--fan-scale':scale,'--fan-z':z+'px',zIndex:isActive?30:20-abs}}
                     onClick={() => setSpotlightIndex(i)} onMouseEnter={() => setSpotlightIndex(i)} onFocus={() => setSpotlightIndex(i)}
                     onKeyDown={(e) => handleSpotlightKeyDown(e, i)} tabIndex={0} aria-current={isActive?'true':undefined} aria-label={item.title}>
                     <div className="fan-deck-card-inner">
