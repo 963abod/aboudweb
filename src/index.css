@@ -11,61 +11,75 @@
   }
 }
 
-/* Spotlight Portfolio Carousel */
+/* Scrolltide-style Spotlight Carousel */
+.spotlight-wrap {
+  width: 100%;
+  touch-action: pan-y;
+}
+
 .spotlight-container {
   width: 100%;
-  height: 470px;
+  height: 500px;
   overflow: hidden;
   position: relative;
-  padding: 0 8px;
+  padding: 0 18px;
 }
 
 .spotlight-rail {
   height: 100%;
+  width: max-content;
+  max-width: none;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: max-content;
-  max-width: 100%;
-  margin: 0 auto;
-  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  gap: 0;
+  padding: 0 10px;
 }
 
 .spotlight-card {
   position: relative;
-  flex: 0 0 78px;
-  width: 78px;
-  height: 390px;
-  border-radius: 18px;
+  flex: 0 0 112px;
+  width: 112px;
+  height: 410px;
+  margin-left: -24px;
   overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: #18181b;
   cursor: pointer;
   outline: none;
-  opacity: 0.78;
-  transform: translateZ(0) scale(0.96);
+  opacity: .62;
+  transform: translateZ(0);
   transition:
-    flex-basis 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    width 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 500ms ease,
-    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-radius 700ms cubic-bezier(0.22, 1, 0.36, 1);
-  border: 1px solid rgba(255,255,255,0.12);
-  background: #18181b;
+    flex-basis 720ms cubic-bezier(.22,1,.36,1),
+    width 720ms cubic-bezier(.22,1,.36,1),
+    margin 720ms cubic-bezier(.22,1,.36,1),
+    opacity 420ms ease,
+    border-radius 720ms cubic-bezier(.22,1,.36,1),
+    box-shadow 720ms cubic-bezier(.22,1,.36,1);
+  z-index: 1;
+}
+
+.spotlight-card:first-child {
+  margin-left: 0;
 }
 
 .spotlight-card:hover,
 .spotlight-card:focus-visible {
-  opacity: 0.95;
+  opacity: .86;
 }
 
 .spotlight-card.is-active {
-  flex-basis: min(430px, 42vw);
-  width: min(430px, 42vw);
+  flex-basis: min(520px, 48vw);
+  width: min(520px, 48vw);
+  margin-left: 8px;
+  margin-right: 8px;
   opacity: 1;
-  transform: translateZ(0) scale(1);
-  border-radius: 22px;
-  border-color: rgba(255,255,255,0.22);
-  box-shadow: 0 28px 70px rgba(0,0,0,0.28);
+  border-radius: 18px;
+  border-color: rgba(255,255,255,.26);
+  box-shadow: 0 30px 80px rgba(0,0,0,.32);
+  z-index: 10;
 }
 
 .spotlight-media {
@@ -79,83 +93,109 @@
 .spotlight-media img {
   position: absolute;
   inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  max-width: none;
   object-fit: cover;
-  object-position: 50% 50%;
+  object-position: center;
   user-select: none;
   -webkit-user-drag: none;
+  filter: saturate(.72) brightness(.68);
   transition:
-    width 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    left 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    object-position 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 500ms ease;
-  filter: saturate(0.72) brightness(0.78);
+    filter 550ms ease,
+    object-position 720ms cubic-bezier(.22,1,.36,1);
 }
 
+/* The image is intentionally re-cropped by the new frame.
+   It is not scaled independently when the card opens. */
 .spotlight-card.is-active .spotlight-media img {
   filter: saturate(1) brightness(1);
-  object-position: center center;
 }
 
-.spotlight-shade {
+.spotlight-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.78), rgba(0,0,0,0.05) 58%, rgba(0,0,0,0.12));
-  opacity: 0.45;
-  transition: opacity 600ms ease;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.02) 30%, rgba(0,0,0,.82) 100%);
+  opacity: .25;
+  transition: opacity 500ms ease;
 }
 
-.spotlight-card.is-active .spotlight-shade {
+.spotlight-card.is-active .spotlight-overlay {
   opacity: 1;
 }
 
 .spotlight-caption {
   position: absolute;
-  left: 24px;
-  right: 24px;
-  bottom: 22px;
-  color: white;
+  left: 28px;
+  right: 28px;
+  bottom: 28px;
+  width: calc(100% - 56px);
+  color: #fff;
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 450ms ease 180ms, transform 650ms cubic-bezier(0.22, 1, 0.36, 1) 100ms;
+  transform: translateY(16px);
   pointer-events: none;
+  transition:
+    opacity 360ms ease 150ms,
+    transform 620ms cubic-bezier(.22,1,.36,1) 80ms;
 }
 
 .spotlight-card.is-active .spotlight-caption {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: auto;
 }
 
-.spotlight-caption span {
-  display: inline-block;
-  margin-bottom: 7px;
+.spotlight-kicker {
+  display: block;
+  margin-bottom: 8px;
   font-size: 10px;
   line-height: 1;
-  letter-spacing: 0.12em;
+  letter-spacing: .14em;
   text-transform: uppercase;
-  opacity: 0.72;
+  opacity: .68;
 }
 
-.spotlight-caption strong {
-  display: block;
-  font-size: 25px;
-  line-height: 1.1;
+.spotlight-caption h3 {
+  margin: 0;
+  font-size: clamp(25px, 3vw, 38px);
+  line-height: 1.04;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -.035em;
+  white-space: nowrap;
 }
 
 .spotlight-caption p {
-  margin: 7px 0 0;
-  max-width: 360px;
-  font-size: 12px;
-  line-height: 1.5;
-  opacity: 0.78;
+  margin: 9px 0 0;
+  max-width: 430px;
+  font-size: 13px;
+  line-height: 1.55;
+  opacity: .78;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.spotlight-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.94);
+  color: #18181b;
+  font-size: 12px;
+  font-weight: 650;
+  text-decoration: none;
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.spotlight-link:hover {
+  transform: translateY(-1px);
+  background: #fff;
 }
 
 .spotlight-fallback {
@@ -170,44 +210,75 @@
   font-weight: 700;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .spotlight-container {
-    height: 360px;
-    padding: 0 4px;
+    height: 430px;
+  }
+
+  .spotlight-card {
+    flex-basis: 82px;
+    width: 82px;
+    height: 350px;
+    margin-left: -18px;
+  }
+
+  .spotlight-card.is-active {
+    flex-basis: min(410px, 55vw);
+    width: min(410px, 55vw);
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+}
+
+@media (max-width: 640px) {
+  .spotlight-container {
+    height: 390px;
+    padding: 0 8px;
   }
 
   .spotlight-rail {
     justify-content: flex-start;
-    gap: 5px;
-    width: 100%;
-    max-width: none;
-    overflow: visible;
+    padding-left: 0;
   }
 
   .spotlight-card {
-    flex-basis: 46px;
-    width: 46px;
+    flex-basis: 55px;
+    width: 55px;
     height: 300px;
-    border-radius: 13px;
+    margin-left: -12px;
+    border-radius: 9px;
+  }
+
+  .spotlight-card:first-child {
+    margin-left: 0;
   }
 
   .spotlight-card.is-active {
-    flex-basis: min(270px, calc(100vw - 120px));
-    width: min(270px, calc(100vw - 120px));
-    border-radius: 17px;
+    flex-basis: min(290px, 68vw);
+    width: min(290px, 68vw);
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 14px;
   }
 
   .spotlight-caption {
-    left: 15px;
-    right: 15px;
-    bottom: 15px;
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    width: calc(100% - 36px);
   }
 
-  .spotlight-caption strong {
-    font-size: 19px;
+  .spotlight-caption h3 {
+    font-size: 22px;
   }
 
   .spotlight-caption p {
+    font-size: 11px;
+  }
+
+  .spotlight-link {
+    margin-top: 12px;
+    padding: 8px 12px;
     font-size: 11px;
   }
 }
@@ -216,7 +287,7 @@
   .spotlight-card,
   .spotlight-media img,
   .spotlight-caption,
-  .spotlight-shade {
+  .spotlight-overlay {
     transition-duration: 1ms !important;
   }
 }
