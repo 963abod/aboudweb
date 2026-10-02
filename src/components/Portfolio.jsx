@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 export function Portfolio({ lang, customProjects }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [spotlightIndex, setSpotlightIndex] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -152,6 +152,7 @@ export function Portfolio({ lang, customProjects }) {
   const handleFilterChange = (key) => {
     setActiveFilter(key);
     setCurrentIndex(0);
+    setSpotlightIndex(0);
   };
 
   const navigateTo = (newIndex) => {
@@ -219,7 +220,7 @@ export function Portfolio({ lang, customProjects }) {
     return 'hidden';
   };
 
-  const activeProject = filteredCases[currentIndex] || filteredCases[0];
+  const activeProject = filteredCases[spotlightIndex] || filteredCases[currentIndex] || filteredCases[0];
 
   return (
     <section id="portfolio" className="py-24 px-4 overflow-hidden">
@@ -248,81 +249,49 @@ export function Portfolio({ lang, customProjects }) {
           ))}
         </div>
 
-        {/* Carousel Area */}
-        <div className="relative w-full max-w-5xl mx-auto mb-12">
-          {/* Left Navigation Arrow */}
-          <button
-            onClick={lang === 'ar' ? handleNext : handlePrev}
-            aria-label="Previous Project"
-            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-zinc-900/80 hover:bg-zinc-950 text-zinc-100 border border-zinc-800 backdrop-blur-md flex items-center justify-center transition-all hover:scale-105 shadow-xl"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-
-          {/* Right Navigation Arrow */}
-          <button
-            onClick={lang === 'ar' ? handlePrev : handleNext}
-            aria-label="Next Project"
-            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-zinc-900/80 hover:bg-zinc-950 text-zinc-100 border border-zinc-800 backdrop-blur-md flex items-center justify-center transition-all hover:scale-105 shadow-xl"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-
-          {/* 3D Carousel Stage */}
-          <div
-            className="carousel-container"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div className="carousel-track">
+        {/* Spotlight Carousel */}
+        <div className="relative w-full max-w-6xl mx-auto mb-12">
+          <div className="spotlight-container" dir="ltr">
+            <div className="spotlight-rail">
               {filteredCases.map((item, i) => {
-                const posClass = getCardPositionClass(i);
-
+                const isActive = i === spotlightIndex;
                 return (
-                  <div
+                  <article
                     key={item.id || i}
-                    onClick={() => navigateTo(i)}
-                    className={twMerge(
-                      "carousel-card shadow-2xl border border-zinc-800/60 bg-zinc-900",
-                      posClass
-                    )}
+                    className={twMerge('spotlight-card', isActive && 'is-active')}
+                    onMouseEnter={() => setSpotlightIndex(i)}
+                    onFocus={() => setSpotlightIndex(i)}
+                    onClick={() => {
+                      setSpotlightIndex(i);
+                      setCurrentIndex(i);
+                    }}
+                    tabIndex={0}
+                    aria-label={item.title}
                   >
-                    {item.imageUrl ? (
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className={`w-full h-full bg-gradient-to-br ${item.color} flex items-center justify-center p-6 text-center`}>
-                        <span className="text-xl font-bold text-zinc-100">{item.title}</span>
+                    <div className="spotlight-media">
+                      {item.imageUrl ? (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          loading="lazy"
+                          draggable="false"
+                        />
+                      ) : (
+                        <div className={twMerge('spotlight-fallback', `bg-gradient-to-br ${item.color}`)}>
+                          <span>{item.title}</span>
+                        </div>
+                      )}
+                      <div className="spotlight-shade" />
+                      <div className="spotlight-caption">
+                        <span>{text.filters[item.category] || item.category}</span>
+                        <strong>{item.title}</strong>
+                        <p>{item.desc}</p>
                       </div>
-                    )}
-
-                    {/* Gradient Overlay for subtle depth */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent pointer-events-none" />
-                  </div>
+                    </div>
+                  </article>
                 );
               })}
             </div>
-          </div>
-
-          {/* Pagination Dots */}
-          <div className="flex justify-center items-center gap-2.5 mt-8">
-            {filteredCases.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => navigateTo(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                className={twMerge(
-                  "w-3 h-3 rounded-full transition-all duration-300",
-                  currentIndex === idx
-                    ? "bg-zinc-100 scale-125 shadow-sm shadow-zinc-100/50"
-                    : "bg-zinc-700 hover:bg-zinc-500"
-                )}
-              />
-            ))}
           </div>
         </div>
 
