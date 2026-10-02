@@ -48,7 +48,7 @@ export function Portfolio({ lang, customProjects }) {
         liveUrl: p.live_url || p.url || '',
         imageUrl: p.image_url || p.cover_image || '',
         color: p.color || 'from-amber-500/20 to-zinc-900/50'
-      }));
+      })).filter(p => p.imageUrl);
 
   const filteredCases = activeFilter === 'all'
     ? casesToDisplay
