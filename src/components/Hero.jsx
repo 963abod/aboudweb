@@ -110,10 +110,10 @@ export function Hero({ lang, settings }) {
         {/* CTAs */}
         <div className="hero-actions hero-reveal flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <a href={`https://wa.me/${whatsappNumber}?text=${projectMessage}`} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300">
-            {ctaPrimary}
+            <span className="relative z-10 block w-full text-center">{ctaPrimary}</span>
           </a>
           <a href="#portfolio" className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors duration-300 font-medium">
-            {ctaSecondary}
+            <span className="relative z-10 block w-full text-center">{ctaSecondary}</span>
           </a>
         </div>
       </div>
