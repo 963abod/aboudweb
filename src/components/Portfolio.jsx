@@ -56,7 +56,16 @@ export function Portfolio({ lang, customProjects }) {
 
   const len = filteredCases.length;
 
-  const handleFilterChange = (key) => { setActiveFilter(key); setSpotlightIndex(0); };
+  const handleFilterChange = (key) => {
+    setActiveFilter(key);
+    setSpotlightIndex(0);
+  };
+
+  useEffect(() => {
+    if (spotlightIndex >= len) {
+      setSpotlightIndex(Math.max(0, len - 1));
+    }
+  }, [len, spotlightIndex]);
 
   const handleSpotlightKeyDown = (e, index) => {
     if (e.key === 'Enter' || e.key === ' ') {
