@@ -24,9 +24,18 @@ export function Footer({ lang = 'ar', settings }) {
             <Logo className="w-6 h-6" />
             <span className="font-english font-bold text-xl tracking-tight text-zinc-900 dark:text-zinc-50">ABOUD WEB</span>
           </div>
-          <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm max-w-sm leading-6">
             {copyrightText}
           </p>
+          <a
+            href="https://aboudweb.onrender.com"
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex items-center gap-2 text-xs text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+          >
+            <span>{lang === 'ar' ? 'تصميم وتطوير عبود' : 'Designed & developed by Aboud'}</span>
+            <span className="transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1">↗</span>
+          </a>
         </div>
 
         <div className="flex flex-col items-start gap-5">
