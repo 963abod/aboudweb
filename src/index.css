@@ -37,6 +37,12 @@
 /* Hero CTA — matched to the navbar visual language */
 .hero-premium .hero-actions a{
   position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1;
+  white-space:nowrap;
   isolation:isolate;
   min-height:52px;
   padding:0 22px;
