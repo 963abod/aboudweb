@@ -33,6 +33,20 @@
 @media(prefers-reduced-motion:reduce){.hero-reveal{animation:none;opacity:1;transform:none}.hero-orb{animation:none}}
 
 
+/* Portfolio image lightbox */
+.portfolio-lightbox{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;background:rgba(0,0,0,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);animation:portfolioLightboxIn 280ms ease forwards}
+.portfolio-lightbox-frame{position:relative;width:min(1100px,94vw);max-height:90vh;border:1px solid rgba(255,255,255,.16);background:#09090b;box-shadow:0 40px 120px rgba(0,0,0,.55);overflow:hidden;animation:portfolioLightboxFrameIn 420ms cubic-bezier(.16,1,.3,1) forwards}
+.portfolio-lightbox-frame img{display:block;width:100%;max-height:78vh;object-fit:contain;background:#111113}
+.portfolio-lightbox-caption{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 20px;color:#fff}
+.portfolio-lightbox-caption span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.55}
+.portfolio-lightbox-caption strong{font-size:14px;font-weight:600}
+.portfolio-lightbox-close{position:fixed;top:22px;right:22px;z-index:2;width:44px;height:44px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(0,0,0,.3);color:#fff;font-size:27px;line-height:1;cursor:pointer;transition:transform 180ms ease,background 180ms ease}
+.portfolio-lightbox-close:hover{transform:rotate(90deg) scale(1.05);background:rgba(255,255,255,.12)}
+@keyframes portfolioLightboxIn{from{opacity:0}to{opacity:1}}
+@keyframes portfolioLightboxFrameIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@media(max-width:640px){.portfolio-lightbox{padding:12px}.portfolio-lightbox-frame{width:96vw;max-height:88vh}.portfolio-lightbox-frame img{max-height:72vh}.portfolio-lightbox-caption{padding:12px 14px}.portfolio-lightbox-close{top:12px;right:12px}}
+@media(prefers-reduced-motion:reduce){.portfolio-lightbox,.portfolio-lightbox-frame{animation:none}}
+
 /* Premium portfolio heading + filters */
 .portfolio-premium{position:relative}
 .portfolio-eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;font-size:10px;letter-spacing:.24em;font-weight:700;color:rgb(113 113 122);text-transform:uppercase}
