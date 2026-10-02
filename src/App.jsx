@@ -109,7 +109,17 @@ function App() {
           .eq('id', 1);
 
         if (settingsData && settingsData.length > 0 && settingsData[0].data && !settingsErr) {
-          setSiteSettings(mergeSettings(settingsData[0].data));
+          const mergedSettings = mergeSettings(settingsData[0].data);
+          setSiteSettings({
+            ...mergedSettings,
+            hero: {
+              ...mergedSettings.hero,
+              title_ar: DEFAULT_SETTINGS.hero.title_ar,
+              title_en: DEFAULT_SETTINGS.hero.title_en,
+              subtitle_ar: DEFAULT_SETTINGS.hero.subtitle_ar,
+              subtitle_en: DEFAULT_SETTINGS.hero.subtitle_en
+            }
+          });
         } else {
           setSiteSettings(DEFAULT_SETTINGS);
         }
