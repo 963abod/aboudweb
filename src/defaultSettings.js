@@ -71,7 +71,7 @@ export const DEFAULT_SETTINGS = {
     whatsapp_message_ar: 'مرحباً عبود، أود الاستفسار عن مشروع بالمواصفات التالية: {specs}. السعر التقديري: ${price}',
     whatsapp_message_en: 'Hello Aboud, I would like to inquire about a project with the following specs: {specs}. Estimated cost: ${price}',
     telegram: 'aboudweb',
-    instagram: 'https://instagram.com/aboudweb',
+    instagram: 'https://instagram.com/abuodweb',
     x: 'https://x.com/aboudweb',
     copyright_ar: '© 2026 ABOUD WEB. جميع الحقوق محفوظة',
     copyright_en: '© 2026 ABOUD WEB. All rights reserved'
