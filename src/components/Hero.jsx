@@ -33,11 +33,20 @@ export function Hero({ lang, settings }) {
   );
 
   return (
-    <section className="hero-premium relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
+    <section className="hero-premium relative min-h-[150vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
       {/* Premium ambient background */}
       <div className="hero-orb hero-orb-one" aria-hidden="true"></div>
       <div className="hero-orb hero-orb-two" aria-hidden="true"></div>
       <div className="hero-grid" aria-hidden="true"></div>
+
+      <div className="hero-orbit-system" aria-hidden="true">
+        <div className="hero-orbit hero-orbit-a"><span></span></div>
+        <div className="hero-orbit hero-orbit-b"><span></span></div>
+        <div className="hero-orbit-core">
+          <div className="hero-core-glow"></div>
+          <div className="hero-core-dot"></div>
+        </div>
+      </div>
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/10 via-zinc-50 dark:via-zinc-950 to-zinc-50 dark:to-zinc-950"></div>
 
       {/* Live Badge */}
