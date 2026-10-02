@@ -99,7 +99,7 @@ function App() {
       <Navbar lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} />
       <main>
         <Hero lang={lang} settings={siteSettings} />
-        <CostEstimator lang={lang} settings={siteSettings} />
+        {/* Cost estimator intentionally removed from the public flow. */}
         <Portfolio lang={lang} customProjects={customProjects} />
         <Pricing lang={lang} settings={siteSettings} />
       </main>
