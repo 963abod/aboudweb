@@ -8,7 +8,7 @@ export function Footer({ lang = 'ar', settings }) {
 
   const whatsappNumber = contacts.whatsapp || '963951708141';
   const telegramUsername = contacts.telegram || 'aboudweb';
-  const instagramUrl = contacts.instagram || 'https://instagram.com/aboudweb';
+  const instagramUrl = 'https://instagram.com/abuodweb';
 
   const cleanTelegram = telegramUsername.replace('@', '');
   const finalInstagramUrl = instagramUrl.startsWith('http') ? instagramUrl : `https://${instagramUrl}`;
