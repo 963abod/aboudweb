@@ -74,6 +74,10 @@ export function Hero({ lang, settings }) {
           <div className="hero-core-glow"></div>
           <div className="hero-core-dot"></div>
         </div>
+        <div className="hero-orbit-label hero-orbit-label-idea">IDEA</div>
+        <div className="hero-orbit-label hero-orbit-label-design">DESIGN</div>
+        <div className="hero-orbit-label hero-orbit-label-build">BUILD</div>
+        <div className="hero-orbit-label hero-orbit-label-launch">LAUNCH</div>
       </div>
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/10 via-zinc-50 dark:via-zinc-950 to-zinc-50 dark:to-zinc-950"></div>
 
