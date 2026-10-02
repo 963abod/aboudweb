@@ -25,6 +25,13 @@ export function Hero({ lang, settings }) {
     ? (activeSettings.hero?.cta_secondary_ar || DEFAULT_SETTINGS.hero.cta_secondary_ar)
     : (activeSettings.hero?.cta_secondary_en || DEFAULT_SETTINGS.hero.cta_secondary_en);
 
+  const whatsappNumber = activeSettings.contacts?.whatsapp || DEFAULT_SETTINGS.contacts.whatsapp;
+  const projectMessage = encodeURIComponent(
+    lang === 'ar'
+      ? 'مرحباً عبود، أريد مناقشة مشروع جديد معك.'
+      : 'Hello Aboud, I would like to discuss a new project with you.'
+  );
+
   return (
     <section className="hero-premium relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
       {/* Premium ambient background */}
@@ -61,7 +68,7 @@ export function Hero({ lang, settings }) {
 
         {/* CTAs */}
         <div className="hero-actions hero-reveal flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <a href="#calculator" className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300">
+          <a href={`https://wa.me/${whatsappNumber}?text=${projectMessage}`} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300">
             {ctaPrimary}
           </a>
           <a href="#portfolio" className="w-full sm:w-auto px-8 py-3.5 rounded-full border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors duration-300 font-medium">
