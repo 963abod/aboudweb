@@ -54,12 +54,13 @@ function App() {
           .select('*')
           .order('id', { ascending: true });
 
-        if (projectsData && projectsData.length > 0 && !projectsErr) {
-          setCustomProjects(projectsData);
+        if (!projectsErr) {
+          setCustomProjects(projectsData || []);
         }
       } catch (e) {
         console.log('Supabase fetch notice:', e);
         setSiteSettings(DEFAULT_SETTINGS);
+        setCustomProjects([]);
       }
     }
 
