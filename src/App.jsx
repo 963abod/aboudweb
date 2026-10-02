@@ -117,7 +117,9 @@ function App() {
               title_ar: DEFAULT_SETTINGS.hero.title_ar,
               title_en: DEFAULT_SETTINGS.hero.title_en,
               subtitle_ar: DEFAULT_SETTINGS.hero.subtitle_ar,
-              subtitle_en: DEFAULT_SETTINGS.hero.subtitle_en
+              subtitle_en: DEFAULT_SETTINGS.hero.subtitle_en,
+              cta_primary_ar: DEFAULT_SETTINGS.hero.cta_primary_ar,
+              cta_primary_en: DEFAULT_SETTINGS.hero.cta_primary_en
             }
           });
         } else {
