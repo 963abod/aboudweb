@@ -59,7 +59,7 @@ export function Hero({ lang, settings }) {
 
       {/* Hero Content */}
       <div className="max-w-5xl text-center space-y-8">
-        <h1 className="hero-title hero-reveal text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-[1.02] md:leading-[1.02]">
+        <h1 className="hero-title hero-reveal text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-[1.12] md:leading-[1.08]">
           {title}
         </h1>
         <p className="hero-subtitle hero-reveal text-lg md:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
