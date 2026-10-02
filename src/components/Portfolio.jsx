@@ -154,11 +154,13 @@ export function Portfolio({ lang, customProjects }) {
               })}
             </div>
           </div>
-          <div className="fan-deck-controls" dir="ltr">
-            <button type="button" className="fan-deck-control" onClick={()=>setSpotlightIndex((spotlightIndex-1+len)%Math.max(len,1))} disabled={len<2} aria-label="Previous project">←</button>
-            <div className="fan-deck-indicator" aria-live="polite"><span>{String(Math.min(spotlightIndex+1,Math.max(len,1))).padStart(2,'0')}</span><i/><span>{String(Math.max(len,0)).padStart(2,'0')}</span></div>
-            <button type="button" className="fan-deck-control" onClick={()=>setSpotlightIndex((spotlightIndex+1)%Math.max(len,1))} disabled={len<2} aria-label="Next project">→</button>
-          </div>
+          {len > 1 && (
+            <div className="fan-deck-controls" dir="ltr">
+              <button type="button" className="fan-deck-control" onClick={()=>setSpotlightIndex((spotlightIndex-1+len)%len)} aria-label="Previous project">←</button>
+              <div className="fan-deck-indicator" aria-live="polite"><span>{String(spotlightIndex+1).padStart(2,'0')}</span><i/><span>{String(len).padStart(2,'0')}</span></div>
+              <button type="button" className="fan-deck-control" onClick={()=>setSpotlightIndex((spotlightIndex+1)%len)} aria-label="Next project">→</button>
+            </div>
+          )}
         </div>
 
       </div>
