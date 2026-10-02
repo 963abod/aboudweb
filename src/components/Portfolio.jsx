@@ -6,6 +6,7 @@ export function Portfolio({ lang, customProjects }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [spotlightIndex, setSpotlightIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
