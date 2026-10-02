@@ -5,6 +5,7 @@ import { ExternalLink } from 'lucide-react';
 export function Portfolio({ lang, customProjects }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [spotlightIndex, setSpotlightIndex] = useState(0);
+  const [lightboxProject, setLightboxProject] = useState(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -60,6 +61,15 @@ export function Portfolio({ lang, customProjects }) {
     setActiveFilter(key);
     setSpotlightIndex(0);
   };
+
+  useEffect(() => {
+    if (!lightboxProject) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setLightboxProject(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxProject]);
 
   useEffect(() => {
     if (spotlightIndex >= len) {
@@ -147,7 +157,7 @@ export function Portfolio({ lang, customProjects }) {
                 return (
                   <article key={item.id || i} className={twMerge('fan-deck-card', isActive && 'is-active')}
                     style={{'--fan-x':'calc(-50% + '+x+'px)','--fan-y':y+'px','--fan-rotate':rotation+'deg','--fan-scale':scale,'--fan-z':z+'px',zIndex:isActive?30:20-abs}}
-                    onClick={() => setSpotlightIndex(i)} onMouseEnter={() => setSpotlightIndex(i)} onFocus={() => setSpotlightIndex(i)}
+                    onClick={() => isActive ? setLightboxProject(item) : setSpotlightIndex(i)} onMouseEnter={() => setSpotlightIndex(i)} onFocus={() => setSpotlightIndex(i)}
                     onKeyDown={(e) => handleSpotlightKeyDown(e, i)} tabIndex={0} aria-current={isActive?'true':undefined} aria-label={item.title}>
                     <div className="fan-deck-card-inner">
                       {item.imageUrl ? <img src={item.imageUrl} alt={item.title} loading={i<3?'eager':'lazy'} draggable="false" /> :
@@ -177,6 +187,18 @@ export function Portfolio({ lang, customProjects }) {
         </>
         )}
 
+        {lightboxProject && (
+          <div className="portfolio-lightbox" role="dialog" aria-modal="true" aria-label={lightboxProject.title} onClick={() => setLightboxProject(null)}>
+            <button type="button" className="portfolio-lightbox-close" onClick={() => setLightboxProject(null)} aria-label={lang === 'ar' ? 'إغلاق الصورة' : 'Close image'}>×</button>
+            <div className="portfolio-lightbox-frame" onClick={(e) => e.stopPropagation()}>
+              <img src={lightboxProject.imageUrl} alt={lightboxProject.title} />
+              <div className="portfolio-lightbox-caption">
+                <span>{text.filters[lightboxProject.category] || lightboxProject.category}</span>
+                <strong>{lightboxProject.title}</strong>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
