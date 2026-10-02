@@ -30,3 +30,13 @@
 @keyframes heroReveal{to{opacity:1;transform:translateY(0)}}
 @keyframes heroFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(18px,24px,0) scale(1.05)}}
 @media(prefers-reduced-motion:reduce){.hero-reveal{animation:none;opacity:1;transform:none}.hero-orb{animation:none}}
+
+
+/* Premium portfolio heading + filters */
+.portfolio-premium{position:relative}
+.portfolio-eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;font-size:10px;letter-spacing:.24em;font-weight:700;color:rgb(113 113 122);text-transform:uppercase}
+.portfolio-eyebrow:before{content:"";width:28px;height:1px;background:currentColor;opacity:.55}
+.portfolio-filter{background:transparent;border:0;cursor:pointer}
+.portfolio-filter:after{content:"";position:absolute;left:50%;bottom:-3px;width:0;height:1px;background:currentColor;transform:translateX(-50%);transition:width 280ms cubic-bezier(.16,1,.3,1)}
+.portfolio-filter:hover:after,.portfolio-filter-active:after{width:100%}
+@media(max-width:640px){.portfolio-filters{gap:18px}.portfolio-eyebrow{margin-bottom:12px}}
