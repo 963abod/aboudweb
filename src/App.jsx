@@ -21,7 +21,7 @@ function StorySection({ lang }) {
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (visible) setActiveStep(Number(visible.target.dataset.storyStep));
       },
-      { threshold: [0.35, 0.6, 0.85], rootMargin: '-20% 0px -35% 0px' }
+      { threshold: [0.3, 0.55, 0.8], rootMargin: '-25% 0px -40% 0px' }
     );
     nodes.forEach((node) => observer.observe(node));
     return () => observer.disconnect();
@@ -40,48 +40,32 @@ function StorySection({ lang }) {
       ];
 
   return (
-    <section id="approach" className="relative px-4 py-24 md:py-32">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid lg:grid-cols-[.8fr_1.2fr] gap-12 lg:gap-24">
-          <div className="lg:sticky lg:top-28 lg:h-[calc(100vh-180px)] flex flex-col justify-between">
-            <div>
-              <span className="text-[10px] tracking-[.24em] text-zinc-500 uppercase">HOW WE WORK</span>
-              <h2 className="mt-5 text-4xl md:text-6xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-                {lang === 'ar' ? 'نبني التجربة، مو بس الموقع.' : 'We build the experience, not just the website.'}
-              </h2>
-            </div>
-            <div className="relative mt-12 hidden lg:block overflow-hidden">
-              <div className="text-[clamp(9rem,18vw,15rem)] leading-none font-semibold tracking-[-.08em] text-zinc-200 dark:text-zinc-800 transition-all duration-700">
-                {steps[activeStep][0]}
-              </div>
-              <div className="absolute bottom-5 start-2 h-px w-32 bg-zinc-300 dark:bg-zinc-700">
-                <div className="h-full bg-zinc-900 dark:bg-zinc-100 transition-all duration-700" style={{ width: `${((activeStep + 1) / steps.length) * 100}%` }} />
-              </div>
-            </div>
-          </div>
+    <section id="approach" className="story-section">
+      <div className="story-shell">
+        <div className="story-intro">
+          <div className="story-eyebrow">HOW WE WORK</div>
+          <h2>{lang === 'ar' ? 'نبني التجربة، مو بس الموقع.' : 'We build the experience, not just the website.'}</h2>
+          <p>{lang === 'ar' ? 'من أول فكرة إلى تجربة رقمية جاهزة للنمو.' : 'From the first idea to a digital experience built to grow.'}</p>
+        </div>
 
-          <div className="relative">
+        <div className="story-stage">
+          <div className="story-stage-number" aria-hidden="true">{steps[activeStep][0]}</div>
+          <div className="story-progress"><span style={{ width: `${((activeStep + 1) / steps.length) * 100}%` }} /></div>
+
+          <div className="story-steps">
             {steps.map(([number, title, desc], index) => (
               <article
                 key={number}
                 data-story-step={index}
-                className="min-h-[72vh] flex items-center py-16 md:py-24"
+                className={`story-step ${activeStep === index ? 'is-active' : ''}`}
               >
-                <div className="w-full border-t border-zinc-200 dark:border-zinc-800 pt-7">
-                  <div className="flex items-start justify-between gap-8">
-                    <span className="font-mono text-xs text-zinc-400">{number}</span>
-                    <span className="text-xs text-zinc-400">{`0${index + 1} / 03`}</span>
-                  </div>
-                  <h3 className="mt-20 text-5xl md:text-7xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-                    {title}
-                  </h3>
-                  <p className="mt-7 max-w-xl text-lg md:text-xl leading-9 text-zinc-500 dark:text-zinc-400">
-                    {desc}
-                  </p>
-                  <div className="mt-14 h-px w-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-zinc-900 dark:bg-zinc-100 transition-all duration-700" style={{ width: activeStep === index ? '100%' : '0%' }} />
-                  </div>
+                <div className="story-step-meta">
+                  <span>{number}</span>
+                  <span>0{index + 1} / 03</span>
                 </div>
+                <h3>{title}</h3>
+                <p>{desc}</p>
+                <div className="story-step-line"><span /></div>
               </article>
             ))}
           </div>
@@ -90,7 +74,6 @@ function StorySection({ lang }) {
     </section>
   );
 }
-
 function App() {
   const [lang, setLang] = useState('ar');
   const [theme, setTheme] = useState('dark');
