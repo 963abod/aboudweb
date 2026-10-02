@@ -32,6 +32,34 @@ export function Hero({ lang, settings }) {
       : 'Hello Aboud, I would like to discuss a new project with you.'
   );
 
+  React.useEffect(() => {
+    const section = document.querySelector('.hero-premium');
+    if (!section) return;
+
+    let frame = 0;
+    const updateProgress = () => {
+      frame = 0;
+      const rect = section.getBoundingClientRect();
+      const range = Math.max(section.offsetHeight - window.innerHeight, 1);
+      const progress = Math.min(Math.max(-rect.top / range, 0), 1);
+      section.style.setProperty('--hero-scroll', progress.toFixed(4));
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(updateProgress);
+    };
+
+    updateProgress();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateProgress);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', updateProgress);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+
   return (
     <section className="hero-premium relative min-h-[150vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
       {/* Premium ambient background */}
