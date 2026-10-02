@@ -120,7 +120,7 @@ export function Portfolio({ lang, customProjects }) {
 
         {/* Scrolltide-style Fan Deck */}
         <div className="fan-deck-wrap">
-          <div className="fan-deck" dir="ltr" role="region" aria-roledescription="carousel" aria-label={text.title} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+          <div className={twMerge("fan-deck", len === 0 && "fan-deck-empty")} dir="ltr" role="region" aria-roledescription="carousel" aria-label={text.title} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             <div className="fan-deck-hinge">
               {filteredCases.map((item, i) => {
                 const offset = i - spotlightIndex;
