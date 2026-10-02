@@ -106,51 +106,49 @@
 }
 
 
-/* ABOUD WEB — unified warm espresso palette */
+/* ABOUD WEB — unified monochrome palette */
 :root{
-  --brand-900:#2a0800;
-  --brand-700:#775144;
-  --brand-300:#c09891;
-  --brand-200:#bea8a7;
-  --brand-100:#f3e9e7;
+  --brand-1:#111111;
+  --brand-2:#232323;
+  --brand-3:#343434;
+  --brand-4:#464646;
+  --brand-5:#575757;
+  --brand-white:#f5f2ee;
 }
-body{
-  background:#bea8a7;
-  color:var(--brand-900);
-}
-.bg-zinc-50{background-color:#bea8a7!important}
-.text-zinc-900{color:#2a0800!important}
-.text-zinc-700{color:#775144!important}
-.text-zinc-600,.text-zinc-500,.text-zinc-400{color:#775144!important}
-.border-zinc-200,.border-zinc-300{border-color:#c09891!important}
-.border-zinc-800,.border-zinc-700{border-color:rgba(119,81,68,.55)!important}
-.bg-zinc-100{background-color:#f3e9e7!important}
-.bg-zinc-900{background-color:#2a0800!important}
-.text-zinc-50{color:#f8f2f0!important}
-.dark body{background:#2a0800;color:#f3e9e7}
-.dark .dark\\:bg-zinc-950{background-color:#2a0800!important}
-.dark .dark\\:bg-zinc-900{background-color:#3b1710!important}
-.dark .dark\\:text-zinc-50,.dark .dark\\:text-white{color:#f8f2f0!important}
-.dark .dark\\:text-zinc-400,.dark .dark\\:text-zinc-300{color:#c09891!important}
-.dark .dark\\:border-zinc-800,.dark .dark\\:border-zinc-700{border-color:rgba(192,152,145,.38)!important}
+body{background:var(--brand-white);color:var(--brand-1)}
+.bg-zinc-50{background-color:var(--brand-white)!important}
+.bg-zinc-100{background-color:#ece9e5!important}
+.bg-zinc-900{background-color:var(--brand-1)!important}
+.text-zinc-900{color:var(--brand-1)!important}
+.text-zinc-700{color:var(--brand-3)!important}
+.text-zinc-600,.text-zinc-500,.text-zinc-400{color:var(--brand-4)!important}
+.text-zinc-50{color:var(--brand-white)!important}
+.border-zinc-200,.border-zinc-300{border-color:#d7d3ce!important}
+.border-zinc-800,.border-zinc-700{border-color:var(--brand-4)!important}
+.dark body{background:var(--brand-1);color:var(--brand-white)}
+.dark .dark\\:bg-zinc-950{background-color:var(--brand-1)!important}
+.dark .dark\\:bg-zinc-900{background-color:var(--brand-2)!important}
+.dark .dark\\:text-zinc-50,.dark .dark\\:text-white{color:var(--brand-white)!important}
+.dark .dark\\:text-zinc-400,.dark .dark\\:text-zinc-300{color:#c9c5c0!important}
+.dark .dark\\:border-zinc-800,.dark .dark\\:border-zinc-700{border-color:var(--brand-3)!important}
 
-/* Replace the old cool hero spectrum with the brand spectrum */
-.hero-orb-one{background:#775144!important}
-.hero-orb-two{background:#c09891!important}
-.hero-core-glow{background:radial-gradient(circle,rgba(192,152,145,.32),transparent 68%)!important}
-.hero-core-dot{box-shadow:0 0 18px 5px rgba(192,152,145,.72)!important}
-.hero-orbit-a{border-color:rgba(119,81,68,.30)!important;box-shadow:0 0 60px rgba(119,81,68,.10)!important}
-.hero-orbit-b{border-color:rgba(192,152,145,.34)!important}
-.hero-orbit-a span{color:#c09891!important}
-.hero-orbit-b span{color:#775144!important}
-.hero-orbit-label{border-color:rgba(119,81,68,.34)!important;background:rgba(255,248,246,.76)!important;color:#775144!important;box-shadow:0 10px 34px rgba(42,8,0,.10),inset 0 0 0 1px rgba(255,255,255,.52)!important}
-.hero-orbit-label:before{background:#c09891!important;box-shadow:0 0 12px rgba(192,152,145,.72)!important}
-.hero-orbit-label-design:before,.hero-orbit-label-build:before,.hero-orbit-label-launch:before{background:#775144!important;box-shadow:0 0 12px rgba(119,81,68,.55)!important}
-.dark .hero-orbit-label{background:rgba(42,8,0,.58)!important;color:#c09891!important;border-color:rgba(192,152,145,.24)!important}
-.dark .hero-orbit-label:before{background:#c09891!important}
-.hero-premium .hero-actions a{border-color:rgba(192,152,145,.72)!important}
-.hero-premium .hero-actions a:first-child{background:#2a0800!important;border-color:#2a0800!important}
-.hero-premium .hero-actions a:first-child:hover{background:#3b1006!important;border-color:#3b1006!important}
-.hero-premium .hero-actions a:not(:first-child){background:rgba(255,248,246,.58)!important;color:#2a0800!important}
-.dark .hero-premium .hero-actions a{background:rgba(42,8,0,.72)!important;border-color:rgba(192,152,145,.40)!important;color:#f8f2f0!important}
-.dark .hero-premium .hero-actions a:first-child{background:#f3e9e7!important;border-color:#f3e9e7!important;color:#2a0800!important}
+/* Hero — same brand palette */
+.hero-orb-one{background:var(--brand-3)!important}
+.hero-orb-two{background:var(--brand-5)!important}
+.hero-core-glow{background:radial-gradient(circle,rgba(87,87,87,.28),transparent 68%)!important}
+.hero-core-dot{background:var(--brand-white)!important;box-shadow:0 0 18px 5px rgba(87,87,87,.58)!important}
+.hero-orbit-a{border-color:rgba(35,35,35,.28)!important;box-shadow:0 0 60px rgba(17,17,17,.10)!important}
+.hero-orbit-b{border-color:rgba(87,87,87,.34)!important}
+.hero-orbit-a span{color:var(--brand-5)!important}
+.hero-orbit-b span{color:var(--brand-3)!important}
+.hero-orbit-label{border-color:rgba(70,70,70,.30)!important;background:rgba(245,242,238,.82)!important;color:var(--brand-3)!important;box-shadow:0 10px 34px rgba(17,17,17,.10),inset 0 0 0 1px rgba(255,255,255,.45)!important}
+.hero-orbit-label:before{background:var(--brand-5)!important;box-shadow:0 0 12px rgba(87,87,87,.55)!important}
+.hero-orbit-label-design:before,.hero-orbit-label-build:before,.hero-orbit-label-launch:before{background:var(--brand-3)!important;box-shadow:0 0 12px rgba(52,52,52,.45)!important}
+.dark .hero-orbit-label{background:rgba(35,35,35,.72)!important;color:#d7d3ce!important;border-color:rgba(192,192,192,.18)!important}
+.dark .hero-orbit-label:before{background:var(--brand-5)!important}
+.hero-premium .hero-actions a{border-color:#c9c5c0!important}
+.hero-premium .hero-actions a:first-child{background:var(--brand-1)!important;border-color:var(--brand-1)!important;color:var(--brand-white)!important}
+.hero-premium .hero-actions a:first-child:hover{background:var(--brand-2)!important;border-color:var(--brand-2)!important}
+.hero-premium .hero-actions a:not(:first-child){background:rgba(245,242,238,.72)!important;color:var(--brand-1)!important}
+.dark .hero-premium .hero-actions a{background:rgba(35,35,35,.82)!important;border-color:var(--brand-3)!important;color:var(--brand-white)!important}
+.dark .hero-premium .hero-actions a:first-child{background:var(--brand-white)!important;border-color:var(--brand-white)!important;color:var(--brand-1)!important}
