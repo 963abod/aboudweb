@@ -26,12 +26,15 @@ export function Hero({ lang, settings }) {
     : (activeSettings.hero?.cta_secondary_en || DEFAULT_SETTINGS.hero.cta_secondary_en);
 
   return (
-    <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
-      {/* Background radial gradient */}
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-zinc-50 dark:via-zinc-950 to-zinc-50 dark:to-zinc-950"></div>
+    <section className="hero-premium relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
+      {/* Premium ambient background */}
+      <div className="hero-orb hero-orb-one" aria-hidden="true"></div>
+      <div className="hero-orb hero-orb-two" aria-hidden="true"></div>
+      <div className="hero-grid" aria-hidden="true"></div>
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/10 via-zinc-50 dark:via-zinc-950 to-zinc-50 dark:to-zinc-950"></div>
 
       {/* Live Badge */}
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/80 backdrop-blur-sm mb-8">
+      <div className="hero-reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100/80 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/80 backdrop-blur-sm mb-8">
         <span className="relative flex h-2 w-2">
           {availabilityStatus ? (
             <>
@@ -48,16 +51,16 @@ export function Hero({ lang, settings }) {
       </div>
 
       {/* Hero Content */}
-      <div className="max-w-4xl text-center space-y-8">
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight md:leading-tight">
+      <div className="max-w-5xl text-center space-y-8">
+        <h1 className="hero-title hero-reveal text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-[1.02] md:leading-[1.02]">
           {title}
         </h1>
-        <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+        <p className="hero-subtitle hero-reveal text-lg md:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
           {subtitle}
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <div className="hero-actions hero-reveal flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <a href="#calculator" className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-medium hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300">
             {ctaPrimary}
           </a>
